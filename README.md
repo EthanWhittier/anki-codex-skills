@@ -20,6 +20,38 @@ Four Codex skills for building, inspecting, analyzing, and reviewing Anki decks 
 
 The skills never write directly to Anki's database. Anki changes go through Anki MCP or AnkiConnect, and destructive or modifying actions require explicit authorization.
 
+## Philosophy: understanding first, retrieval always
+
+Traditional flashcards are excellent at one important job: repeatedly retrieving a stable answer at the right time. They become less effective when a complex idea is compressed into a long answer, when wording is mistaken for understanding, or when success on one memorized example creates the illusion that a transferable skill has been learned.
+
+These skills keep Anki's scheduling strength while broadening what a review can test. The guiding ideas are:
+
+- **Learn before memorizing.** An unresolved explanation should be clarified before it becomes a permanent card.
+- **One identifiable learning target per card.** A card can test a fact, distinction, mechanism, diagnosis, application, or transfer—not an accidental bundle of all of them.
+- **Grade meaning rather than wording.** Correct paraphrases and equivalent representations should pass; missing meaning-bearing facts should not.
+- **Make the prompt define the contract.** The learner should never be graded on details the question did not request.
+- **Vary practice when variation is the skill.** Generated exercises can change the structure of a problem while preserving a frozen learning target, difficulty, verification method, and grading standard.
+- **Keep the learner in control.** Codex may judge an answer, but only the learner's explicit Again, Hard, Good, or Easy choice changes Anki's schedule.
+- **Treat misses as evidence.** Lapses can reveal a missing prerequisite, a weak distinction, an overloaded card, or genuinely difficult material; they are not automatically a failure of effort.
+
+### What this adds beyond a conventional flashcard workflow
+
+The system supports three complementary forms of practice:
+
+1. **Fixed-answer cards** for stable facts, labels, rules, and narrow distinctions.
+2. **Fixed open-response cards** when one stable prompt admits several independently verifiable correct answers.
+3. **Generated-problem cards** when the learner should solve fresh instances instead of remembering the surface details of one example.
+
+Together, these allow a deck to train recall and also probe explanation, comparison, error diagnosis, application, synthesis, and transfer. Chat review can accept a sound answer expressed in the learner's own words, give a concise reason for the grade, handle card media, and immediately continue through Anki's live learning and relearning queues. Deck analysis adds another feedback loop by connecting scheduling signals with the actual formulation of observed cards.
+
+The gain is not “AI instead of flashcards.” It is a hybrid: Anki remains the source of truth for cards and scheduling, while Codex helps author better prompts, validate richer responses, generate controlled practice, and diagnose why a card is difficult.
+
+### Traditional flashcards still have a place
+
+Not every card should be open-ended or generative. Conventional fixed-answer and image-based cards are often the clearest and most efficient choice when the target really is stable recall or recognition. Anatomy, geography, vocabulary, symbols, dates, formulas, and visual identification are strong examples: identifying a bone on an image or recalling a country's capital usually benefits from a consistent target and an unambiguous answer.
+
+Even in anatomy or geography, richer cards can be added selectively—for example, distinguishing commonly confused structures, explaining how location relates to function, or comparing neighboring regions. Those cards should supplement the clean recognition cards, not replace them. The right card type follows the learning target.
+
 ## Install
 
 Copy the skill directories into your personal Codex skills directory:
