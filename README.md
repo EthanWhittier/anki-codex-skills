@@ -46,6 +46,12 @@ Together, these allow a deck to train recall and also probe explanation, compari
 
 The gain is not “AI instead of flashcards.” It is a hybrid: Anki remains the source of truth for cards and scheduling, while Codex helps author better prompts, validate richer responses, generate controlled practice, and diagnose why a card is difficult.
 
+### Expect a slower pace
+
+This flow is intentionally slower than rapidly flipping through conventional flashcards. The learner has to produce an answer, Codex evaluates its meaning, the reference or targeted feedback is revealed, and the learner explicitly chooses the scheduling rating. Open responses and generated problems take even longer because they demand explanation, construction, or transfer rather than recognition alone.
+
+That slower pace is a feature when the goal is deliberate practice: fewer prompts can produce richer evidence about what the learner understands, where the reasoning broke down, and whether knowledge transfers to a new case. It is still a real tradeoff. If the goal is maximum cards per minute, quick recognition, or high-volume rehearsal of stable facts, this workflow may not be the right fit. Use ordinary Anki review for those sessions, or reserve chat review for the smaller subset of cards that benefits from deeper grading.
+
 ### Traditional flashcards still have a place
 
 Not every card should be open-ended or generative. Conventional fixed-answer and image-based cards are often the clearest and most efficient choice when the target really is stable recall or recognition. Anatomy, geography, vocabulary, symbols, dates, formulas, and visual identification are strong examples: identifying a bone on an image or recalling a country's capital usually benefits from a consistent target and an unambiguous answer.
@@ -112,18 +118,28 @@ Codex syncs Anki, resolves the deck name, and fetches one available card at a ti
 
 Only your explicit rating schedules the card. Codex then fetches the next card from Anki's live queue, including learning and relearning cards when they reappear. Say “done” to stop and sync.
 
-### Example
+### Positive example
 
-The screenshot below shows a correct answer graded `Good`, followed by the learner selecting `4` (`Easy`) and Codex continuing the live Anki schedule.
+The learner gives the exact semantic meaning of the formula. Codex reveals the reference answer, grades the response `Good`, gives a short reason, and waits for the learner's explicit rating. The learner chooses `4` (`Easy`), so Codex schedules it and continues.
 
-![Chat-based Anki review example](assets/chat-review-example.png)
+![Positive chat-based Anki review example](assets/positive-review-example.png)
+
+### Negative example
+
+The learner's answer captures the broad idea of uniqueness but misreads the inner universal quantifier as existential. Codex reveals the compact reference answer and marks the response `Again`, identifying the smallest material error instead of rewarding a plausible-sounding explanation. It still waits for the learner—not the model—to choose the scheduling rating.
+
+![Negative chat-based Anki review example](assets/negative-review-example.png)
+
+These examples show the intended balance: accept correct meaning without requiring identical wording, but remain strict when a logical distinction changes the claim.
 
 ## Repository layout
 
 ```text
 .
 ├── assets/
-│   └── chat-review-example.png
+│   ├── chat-review-example.png
+│   ├── negative-review-example.png
+│   └── positive-review-example.png
 └── skills/
     ├── add-anki-cards/
     ├── analyze-anki-deck/
