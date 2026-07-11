@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Anki Cards"
+  short_description: "Design fixed and open-response Anki cards"
+  default_prompt: "Use $add-anki-cards to design and add fixed-answer, open-response, or generated-problem Anki cards."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inspect Anki"
+  short_description: "Read and inspect Anki safely through AnkiConnect."
+  default_prompt: "Inspect my Anki decks/cards safely through AnkiConnect without direct database writes."

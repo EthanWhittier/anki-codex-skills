@@ -1,0 +1,10 @@
+interface:
+  display_name: "Analyze Anki Deck"
+  short_description: "Review one Anki deck deeply."
+  default_prompt: "Use $analyze-anki-deck to analyze one Anki deck using deck-specific stats and Anki MCP card inspection."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "anki-mcp"
+      description: "Local Anki MCP server connected to AnkiConnect"
