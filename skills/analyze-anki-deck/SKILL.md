@@ -86,7 +86,7 @@ Expected local server config:
 ```toml
 [mcp_servers.anki-mcp]
 command = "node"
-args = ["/absolute/path/to/anki-mcp-server/dist/main-stdio.js"]
+args = ["/absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
 
 [mcp_servers.anki-mcp.env]
 ANKI_CONNECT_URL = "http://localhost:8765"
@@ -114,7 +114,7 @@ pkill -TERM -f "/node_modules/.bin/ankimcp --stdio"
 5. If the local MCP build is missing or stale:
 
 ```sh
-cd /absolute/path/to/anki-mcp-server
+cd /absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server
 npm install
 npm run build
 ```

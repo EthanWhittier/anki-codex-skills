@@ -1,0 +1,10 @@
+{
+  "modelName": "Basic",
+  "css": ".card {\n    font-family: arial;\n    font-size: 20px;\n    text-align: center;\n    color: black;\n    background-color: white;\n}\n",
+  "templates": {
+    "Card 1": {
+      "Front": "{{Front}}",
+      "Back": "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}"
+    }
+  }
+}

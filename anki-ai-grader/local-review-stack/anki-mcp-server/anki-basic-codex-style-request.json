@@ -1,0 +1,27 @@
+{
+  "styling": {
+    "action": "updateModelStyling",
+    "version": 6,
+    "params": {
+      "model": {
+        "name": "Basic",
+        "css": ".card {\n  margin: 0;\n  padding: 0;\n  background: #ffffff;\n  color: #111111;\n  font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Inter\", \"Segoe UI\", Arial, sans-serif;\n  font-size: 20px;\n  line-height: 1.45;\n  text-align: left;\n}\n\n.codex-shell {\n  box-sizing: border-box;\n  width: min(100%, 1180px);\n  min-height: 72vh;\n  margin: 0 auto;\n  padding: 42px 64px 96px;\n}\n\n.codex-question {\n  font-size: 23px;\n  font-weight: 400;\n  line-height: 1.35;\n  letter-spacing: 0;\n  margin: 0 0 72px;\n}\n\n.codex-tags {\n  min-height: 34px;\n  margin: 0 0 16px;\n}\n\n.codex-tag-pill {\n  display: inline-block;\n  max-width: 100%;\n  border: 1px solid #b7b7b7;\n  border-radius: 7px;\n  background: #eeeeee;\n  color: #111111;\n  padding: 6px 12px;\n  font-size: 20px;\n  font-weight: 700;\n  line-height: 1.15;\n  overflow-wrap: anywhere;\n}\n\n.codex-answer-wrap {\n  margin-top: 92px;\n}\n\n.codex-answer {\n  border-left: 3px solid #e8e8e8;\n  padding-left: 24px;\n  font-size: 22px;\n  line-height: 1.45;\n}\n\n.codex-answer p:first-child,\n.codex-answer div:first-child {\n  margin-top: 0;\n}\n\n.codex-answer img {\n  max-width: min(100%, 420px);\n  height: auto;\n  border-radius: 6px;\n}\n\n.codex-divider,\nhr#answer {\n  display: none;\n}\n\n.replay-button,\n.soundLink {\n  vertical-align: middle;\n}\n\n@media (max-width: 720px) {\n  .codex-shell {\n    padding: 28px 24px 72px;\n  }\n\n  .codex-question {\n    font-size: 21px;\n    margin-bottom: 48px;\n  }\n\n  .codex-answer {\n    font-size: 20px;\n    padding-left: 18px;\n  }\n}\n"
+      }
+    }
+  },
+  "templates": {
+    "action": "updateModelTemplates",
+    "version": 6,
+    "params": {
+      "model": {
+        "name": "Basic",
+        "templates": {
+          "Card 1": {
+            "Front": "<div class=\"codex-shell\">\n  <div class=\"codex-question\">{{Front}}</div>\n  <div class=\"codex-tags\">{{#Tags}}<span class=\"codex-tag-pill\">{{Tags}}</span>{{/Tags}}</div>\n</div>",
+            "Back": "<div class=\"codex-shell\">\n  <div class=\"codex-question\">{{Front}}</div>\n  <div class=\"codex-tags\">{{#Tags}}<span class=\"codex-tag-pill\">{{Tags}}</span>{{/Tags}}</div>\n  <div class=\"codex-answer-wrap\">\n    <div class=\"codex-answer\">{{Back}}</div>\n  </div>\n</div>"
+          }
+        }
+      }
+    }
+  }
+}

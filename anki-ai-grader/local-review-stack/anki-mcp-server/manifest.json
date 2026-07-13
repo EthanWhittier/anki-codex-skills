@@ -1,0 +1,288 @@
+{
+  "manifest_version": "0.4",
+  "name": "anki-mcp-server",
+  "display_name": "Anki MCP Server",
+  "version": "0.18.5",
+  "license": "MIT",
+  "description": "Model Context Protocol server for Anki spaced repetition flashcard application",
+  "long_description": "Transform your Anki experience with natural language interaction - like having a private tutor. This MCP server enables AI assistants to interact with Anki, allowing them to explain concepts, make learning more engaging, provide context, and adapt to your learning style. Features include review sessions, deck management, note creation and editing, and more.\n\nRequires Anki with the AnkiConnect plugin installed.",
+  "author": {
+    "name": "Anatoly Tarnavsky",
+    "email": "support@ankimcp.ai",
+    "url": "https://github.com/anatoly314"
+  },
+  "homepage": "https://ankimcp.ai",
+  "documentation": "https://github.com/ankimcp/anki-mcp-server#readme",
+  "support": "https://github.com/ankimcp/anki-mcp-server/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ankimcp/anki-mcp-server.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "anki",
+    "flashcards",
+    "spaced-repetition",
+    "ai",
+    "claude",
+    "chatgpt",
+    "ankiconnect"
+  ],
+  "privacy_policies": [
+    "https://ankimcp.ai/privacy/"
+  ],
+  "screenshots": [
+    "docs/screenshots/01-extension-config.png",
+    "docs/screenshots/02-create-and-review.png",
+    "docs/screenshots/03-adaptive-review.png"
+  ],
+  "icon": "icon.png",
+  "tools": [
+    {
+      "name": "sync",
+      "description": "Sync with AnkiWeb to get latest data and push changes"
+    },
+    {
+      "name": "get_due_cards",
+      "description": "Get cards that are due for review, optionally filtered by deck"
+    },
+    {
+      "name": "get_next_due_card",
+      "description": "Get Anki's next review card and opaque chat-review ticket when the maintained AnkiConnect protocol is available"
+    },
+    {
+      "name": "get_cards",
+      "description": "Get cards with flexible filtering by state (due, new, learning, suspended, buried) and deck"
+    },
+    {
+      "name": "present_card",
+      "description": "Show a card for review with its question/front side"
+    },
+    {
+      "name": "rate_card",
+      "description": "Rate card performance (Again, Hard, Good, Easy) and schedule next review. For review sessions that should continue immediately, use rate_card_and_get_next instead"
+    },
+    {
+      "name": "rate_card_and_get_next",
+      "description": "Consume an opaque review ticket exactly once, rate the current card, and return Anki's next card and ticket in one operation"
+    },
+    {
+      "name": "addNote",
+      "description": "Create new notes with specified fields and tags. IMPORTANT: Only create notes that were explicitly requested by the user"
+    },
+    {
+      "name": "addNotes",
+      "description": "Add multiple notes to Anki in a single batch. Up to 100 notes sharing the same deck and model. Duplicates are skipped individually; validation errors (empty required fields, bad tags) reject the batch."
+    },
+    {
+      "name": "findNotes",
+      "description": "Search for notes using Anki query syntax (deck:, tag:, is:due, etc.)"
+    },
+    {
+      "name": "notesInfo",
+      "description": "Get detailed information about notes including fields, tags, and CSS styling"
+    },
+    {
+      "name": "updateNoteFields",
+      "description": "Update existing note fields with support for HTML content. IMPORTANT: Only update notes that the user explicitly asked to modify"
+    },
+    {
+      "name": "deleteNotes",
+      "description": "Delete notes and all associated cards. CRITICAL: This is destructive and permanent - only delete notes the user explicitly confirmed for deletion"
+    },
+    {
+      "name": "modelNames",
+      "description": "List all available note types/models"
+    },
+    {
+      "name": "modelFieldNames",
+      "description": "Get field names for a specific note type"
+    },
+    {
+      "name": "getTags",
+      "description": "Get all tags in the Anki collection. Helps discover existing tags before creating notes to prevent duplication"
+    },
+    {
+      "name": "modelStyling",
+      "description": "Get CSS styling information for a note type"
+    },
+    {
+      "name": "createModel",
+      "description": "Create a new note type (model) with custom fields, card templates, and CSS styling. Useful for creating specialized models like RTL (Right-to-Left) language models for Hebrew, Arabic, etc."
+    },
+    {
+      "name": "updateModelStyling",
+      "description": "Update the CSS styling for an existing note type. Changes apply to all cards using this model. Useful for adding RTL support or modifying appearance."
+    },
+    {
+      "name": "guiBrowse",
+      "description": "Open Anki Card Browser and search for cards. For note editing/creation workflows only, NOT for review sessions"
+    },
+    {
+      "name": "guiSelectCard",
+      "description": "Select a specific card in the Card Browser. For note editing/creation workflows only"
+    },
+    {
+      "name": "guiSelectedNotes",
+      "description": "Get IDs of notes currently selected in Card Browser. For note editing/creation workflows only"
+    },
+    {
+      "name": "guiAddCards",
+      "description": "Open Add Cards dialog with preset note details. For note editing/creation workflows only"
+    },
+    {
+      "name": "guiEditNote",
+      "description": "Open note editor for a specific note. For note editing/creation workflows only"
+    },
+    {
+      "name": "guiDeckOverview",
+      "description": "Open Deck Overview dialog for a specific deck. For deck management workflows only"
+    },
+    {
+      "name": "guiDeckBrowser",
+      "description": "Open Deck Browser dialog. For deck management workflows only"
+    },
+    {
+      "name": "guiCurrentCard",
+      "description": "Get current card info in review mode. For note editing/creation workflows only, NOT for review sessions"
+    },
+    {
+      "name": "guiShowQuestion",
+      "description": "Show question side of current card. For note editing/creation workflows only, NOT for review sessions"
+    },
+    {
+      "name": "guiShowAnswer",
+      "description": "Show answer side of current card. For note editing/creation workflows only, NOT for review sessions"
+    },
+    {
+      "name": "guiUndo",
+      "description": "Undo the last action in Anki. For note editing/creation workflows only"
+    },
+    {
+      "name": "listDecks",
+      "description": "List all Anki decks, optionally with card count statistics for each deck"
+    },
+    {
+      "name": "deckStats",
+      "description": "Get comprehensive statistics for a single deck including card counts, ease and interval distributions"
+    },
+    {
+      "name": "createDeck",
+      "description": "Create a new empty Anki deck. Supports parent::child structure (max 2 levels, e.g., \"Japanese::JLPT N5\")"
+    },
+    {
+      "name": "changeDeck",
+      "description": "Move cards to a different deck. Target deck will be created if it doesn't exist"
+    },
+    {
+      "name": "retrieveMediaFile",
+      "description": "Download a media file from Anki's collection.media folder as base64 content"
+    },
+    {
+      "name": "getMediaFilesNames",
+      "description": "List media files in Anki's collection.media folder, optionally filtered by pattern"
+    },
+    {
+      "name": "storeMediaFile",
+      "description": "Upload a media file to Anki from base64 data, an absolute file path, or a URL. Perfect for workflows like ElevenLabs TTS -> Anki audio flashcards"
+    },
+    {
+      "name": "deleteMediaFile",
+      "description": "Remove a media file from Anki's collection.media folder. CRITICAL: This is destructive and permanent - only delete media the user explicitly confirmed for deletion"
+    },
+    {
+      "name": "addTags",
+      "description": "Add space-separated tags to specified notes. Use getTags first to discover existing tags and prevent duplication"
+    },
+    {
+      "name": "removeTags",
+      "description": "Remove space-separated tags from specified notes"
+    },
+    {
+      "name": "replaceTags",
+      "description": "Rename a tag across specified notes (e.g., \"RomanEmpire\" -> \"roman-empire\")"
+    },
+    {
+      "name": "clearUnusedTags",
+      "description": "Remove orphaned tags that are not used by any notes in the collection. CRITICAL: This is destructive and permanent - only run when the user explicitly asks to clean up tags"
+    },
+    {
+      "name": "collection_stats",
+      "description": "Get aggregated statistics across all decks in the collection with per-deck breakdown"
+    },
+    {
+      "name": "review_stats",
+      "description": "Get review history analysis including temporal patterns, retention metrics, and study streak information"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "anki_review",
+      "description": "Guided Anki review session workflow with spaced repetition best practices",
+      "text": "Guidelines for conducting Anki spaced repetition review sessions. Covers sync workflow, card presentation, rating criteria, and session management."
+    },
+    {
+      "name": "twenty_rules",
+      "description": "Twenty rules of formulating knowledge for effective Anki flashcard creation",
+      "text": "Twenty rules of formulating knowledge by Dr. Piotr Wozniak, adapted for effective Anki flashcard creation."
+    }
+  ],
+  "prompts_generated": true,
+  "server": {
+    "type": "node",
+    "entry_point": "dist/main-stdio.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/main-stdio.js"
+      ],
+      "env": {
+        "ANKI_CONNECT_URL": "${user_config.anki_connect_url}",
+        "ANKI_CONNECT_API_VERSION": "${user_config.anki_connect_api_version}",
+        "ANKI_CONNECT_API_KEY": "${user_config.anki_connect_api_key}",
+        "ANKI_CONNECT_TIMEOUT": "${user_config.anki_connect_timeout}"
+      }
+    }
+  },
+  "user_config": {
+    "anki_connect_url": {
+      "type": "string",
+      "title": "AnkiConnect URL",
+      "description": "URL of the AnkiConnect server (default: http://localhost:8765)",
+      "default": "http://localhost:8765",
+      "required": false
+    },
+    "anki_connect_api_version": {
+      "type": "string",
+      "title": "AnkiConnect API Version",
+      "description": "API version to use (default: 6)",
+      "default": "6",
+      "required": false
+    },
+    "anki_connect_api_key": {
+      "type": "string",
+      "title": "AnkiConnect API Key",
+      "description": "Optional API key if configured in AnkiConnect",
+      "required": false,
+      "sensitive": true
+    },
+    "anki_connect_timeout": {
+      "type": "string",
+      "title": "Request Timeout",
+      "description": "Request timeout in milliseconds (default: 5000)",
+      "default": "5000",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "runtimes": {
+      "node": ">=20.19.0 <21.0.0 || >=22.12.0"
+    }
+  }
+}

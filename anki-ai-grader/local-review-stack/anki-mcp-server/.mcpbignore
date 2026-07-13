@@ -1,0 +1,94 @@
+# Source files (not needed in bundle)
+/src/
+/test/
+
+# Test files and directories
+*.spec.ts
+*.test.ts
+__tests__/
+__mocks__/
+coverage/
+
+# Development configuration
+tsconfig.json
+tsconfig.build.json
+jest.config.js
+.eslintrc.js
+eslint.config.mjs
+.prettierrc
+.editorconfig
+nest-cli.json
+
+# Claude development files
+/.claude/
+/.claude-draft/
+/.docs/
+
+# Icon source (only generated icon.png is needed at runtime)
+/assets/
+
+# Docker development files
+/.docker/
+
+# Husky hooks (git hooks for dev)
+/.husky/
+
+# NPM bin scripts (package.json bin handles this)
+/bin/
+
+# Documentation (available on GitHub), except screenshots which ship in the bundle.
+# Three-part pattern required because of how the mcpb walker + `ignore` library
+# interact:
+# - /docs/* excludes all immediate children (files and subdirs)
+# - !/docs/screenshots (no trailing slash) re-includes the dir itself so the
+#   walker descends into it (queries use no trailing slash)
+# - !/docs/screenshots/* re-includes the files inside
+/docs/*
+!/docs/screenshots
+!/docs/screenshots/*
+
+# Git and GitHub
+.git/
+.github/
+.gitignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (user will read it on GitHub)
+CLAUDE.md
+
+# MCP Inspector config (not needed in bundle)
+mcp-inspector-config.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+*.tsbuildinfo
+/dist-executables/
+/dist-bundle/
+*.tgz
+*.mcpb
+
+# Generated files
+llms-full.txt
+
+# Development scripts (not needed in bundle)
+/scripts/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db

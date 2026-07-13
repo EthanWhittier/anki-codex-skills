@@ -1,0 +1,13 @@
+interface:
+  display_name: "Chat Anki Review"
+  short_description: "Review fixed and open-response Anki cards"
+  default_prompt: "Use $chat-anki-review to study my fixed-answer, open-response, or generated-problem Anki cards from a deck I name."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "anki-mcp"
+      description: "Local Anki MCP server connected to AnkiConnect"
+
+policy:
+  allow_implicit_invocation: true

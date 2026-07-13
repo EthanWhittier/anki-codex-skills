@@ -1,6 +1,15 @@
-# Anki skills for Codex
+# Anki learning stack for Codex
 
-Four Codex skills for building, inspecting, analyzing, and reviewing Anki decks through Anki MCP or AnkiConnect.
+An integrated, local-first system for building, inspecting, analyzing, grading, and reviewing Anki decks through Codex, Anki MCP, AnkiConnect, and an optional AI typed-answer grader.
+
+## Included components
+
+| Component | Purpose |
+| --- | --- |
+| `skills/` | Four Codex skills for card creation, collection inspection, deck analysis, and live chat review. |
+| `anki-ai-grader/ai_grader/` | An Anki add-on that grades typed answers with the OpenAI Responses API. |
+| `anki-ai-grader/local-review-stack/` | A reproducible ticketed-review stack with maintained AnkiConnect and Anki MCP source snapshots, tests, build scripts, and rollback tooling. |
+| `assets/` | Positive and negative examples of the review experience. |
 
 ## Included skills
 
@@ -17,6 +26,7 @@ Four Codex skills for building, inspecting, analyzing, and reviewing Anki decks 
 - [AnkiConnect](https://ankiweb.net/shared/info/2055492159), using its default local endpoint (`http://127.0.0.1:8765`)
 - Codex with these skills installed
 - Optional: an Anki MCP server exposing the tools named in the skills
+- Optional: an OpenAI API key for the in-Anki typed-answer grader
 
 The skills never write directly to Anki's database. Anki changes go through Anki MCP or AnkiConnect, and destructive or modifying actions require explicit authorization.
 
@@ -68,12 +78,22 @@ cp -R skills/* ~/.codex/skills/
 
 Restart Codex so it discovers the installed skills. Keep Anki open whenever you create, inspect, analyze, or review cards.
 
+For the complete maintained review stack, build from the consolidated source:
+
+```sh
+cd anki-ai-grader/local-review-stack
+./scripts/build.sh
+./scripts/verify.sh
+```
+
+The build script installs Node dependencies only when needed, type-checks and builds the MCP server, and packages the maintained AnkiConnect source. The verification workflow uses disposable collections and a localhost-only sync server; it does not open a real Anki profile.
+
 If you use a local Anki MCP server, add its command to `~/.codex/config.toml`. Replace the placeholder with the server's real path:
 
 ```toml
 [mcp_servers.anki-mcp]
 command = "node"
-args = ["/absolute/path/to/anki-mcp-server/dist/main-stdio.js"]
+args = ["/absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
 
 [mcp_servers.anki-mcp.env]
 ANKI_CONNECT_URL = "http://localhost:8765"
@@ -140,11 +160,30 @@ These examples show the intended balance: accept correct meaning without requiri
 │   ├── chat-review-example.png
 │   ├── negative-review-example.png
 │   └── positive-review-example.png
-└── skills/
+├── anki-ai-grader/
+│   ├── ai_grader/
+│   ├── local-review-stack/
+│   │   ├── anki-connect/
+│   │   └── anki-mcp-server/
+│   └── scripts/
+├── skills/
     ├── add-anki-cards/
     ├── analyze-anki-deck/
     ├── chat-anki-review/
     └── inspect-anki/
+├── SOURCE_PROVENANCE.md
+└── THIRD_PARTY_NOTICES.md
 ```
 
 Each skill is self-contained. Supporting references, scripts, and agent metadata live alongside its `SKILL.md`.
+
+## Licensing and upstream projects
+
+This repository is an aggregate containing original material and modified third-party projects under different licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [SOURCE_PROVENANCE.md](SOURCE_PROVENANCE.md) before redistributing it.
+
+- The included AnkiConnect snapshot is based on `FooSoft/anki-connect` and remains under GPL-3.0-or-later. Its license notice is retained in its source directory.
+- The included Anki MCP snapshot is pinned to upstream commit `7d017e7` (v0.18.5), which was MIT-licensed at that revision. Its MIT license is retained in its source directory.
+- Anki itself is not included. Anki is AGPL-3.0-or-later and is a separate prerequisite.
+- The repository is unofficial and is not affiliated with or endorsed by Ankitects, the AnkiConnect maintainers, or the Anki MCP maintainers.
+
+Publishing source on GitHub does not by itself grant a license to the original portions of this repository. A repository-wide license for the original skills, grader, scripts, documentation, and assets should be selected explicitly; the third-party subtrees remain governed by their own notices regardless of that choice.
