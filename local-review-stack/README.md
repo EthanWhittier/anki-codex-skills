@@ -13,7 +13,7 @@ The AnkiConnect checkout is based on upstream commit `4064fa1`, with the install
 ## Build and source tests
 
 ```sh
-cd /absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack
+cd /absolute/path/to/anki-codex-skills/local-review-stack
 ./scripts/build.sh
 ./scripts/verify.sh
 ```
@@ -46,7 +46,7 @@ The FSRS gate enables FSRS in disposable collections and covers new, learning, r
    This backs up `~/.codex/config.toml` and the current chat-review skill, then points Codex at:
 
    ```text
-   /absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server/dist/main-stdio.js
+   /absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server/dist/main-stdio.js
    ```
 
 6. Restart Codex. This is mandatory: existing tasks and MCP processes do not reload `config.toml`, rebuilt JavaScript, or skill instructions in place.

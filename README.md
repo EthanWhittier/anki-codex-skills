@@ -1,14 +1,13 @@
 # Anki learning stack for Codex
 
-An integrated, local-first system for building, inspecting, analyzing, grading, and reviewing Anki decks through Codex, Anki MCP, AnkiConnect, and an optional AI typed-answer grader.
+An integrated, local-first system for building, inspecting, analyzing, grading, and reviewing Anki decks through Codex, Anki MCP, and AnkiConnect.
 
 ## Included components
 
 | Component | Purpose |
 | --- | --- |
 | `skills/` | Four Codex skills for card creation, collection inspection, deck analysis, and live chat review. |
-| `anki-ai-grader/ai_grader/` | An Anki add-on that grades typed answers with the OpenAI Responses API. |
-| `anki-ai-grader/local-review-stack/` | A reproducible ticketed-review stack with maintained AnkiConnect and Anki MCP source snapshots, tests, build scripts, and rollback tooling. |
+| `local-review-stack/` | A reproducible ticketed-review stack with maintained AnkiConnect and Anki MCP source snapshots, tests, build scripts, and rollback tooling. |
 | `assets/` | Positive and negative examples of the review experience. |
 
 ## Included skills
@@ -22,11 +21,11 @@ An integrated, local-first system for building, inspecting, analyzing, grading, 
 
 ## Requirements
 
-- [Anki](https://apps.ankiweb.net/) running locally
-- [AnkiConnect](https://ankiweb.net/shared/info/2055492159), using its default local endpoint (`http://127.0.0.1:8765`)
+- [Anki](https://apps.ankiweb.net/) installed locally
+- Node.js 20.19 or newer for the Anki MCP server
+- Python 3 for installation and verification scripts
 - Codex with these skills installed
-- Optional: an Anki MCP server exposing the tools named in the skills
-- Optional: an OpenAI API key for the in-Anki typed-answer grader
+- The included maintained AnkiConnect and Anki MCP sources for ticketed chat review, or stock AnkiConnect for the legacy path
 
 The skills never write directly to Anki's database. Anki changes go through Anki MCP or AnkiConnect, and destructive or modifying actions require explicit authorization.
 
@@ -68,36 +67,123 @@ Not every card should be open-ended or generative. Conventional fixed-answer and
 
 Even in anatomy or geography, richer cards can be added selectively—for example, distinguishing commonly confused structures, explaining how location relates to function, or comparing neighboring regions. Those cards should supplement the clean recognition cards, not replace them. The right card type follows the learning target.
 
-## Install
+## Why the source is modified
 
-Copy the skill directories into your personal Codex skills directory:
+This repository does more than configure stock projects. The chat-review workflow crosses three layers—Codex, Anki MCP, and AnkiConnect—and reliable scheduling requires those layers to share one protocol.
+
+### AnkiConnect: preserve Anki's scheduler state
+
+The original card-ID review path can race Anki's live queue. A learning card may become due after another card is presented, so a later generic `answerCards` call can fail with `not at top of queue` or act against queue state that differs from presentation time.
+
+The maintained AnkiConnect derivative adds a ticketed chat-review protocol. When it presents a card, it keeps the pending card and the exact `SchedulingStates` returned by Anki's scheduler inside Anki. When the learner rates that card, AnkiConnect passes the original card and frozen states back through Anki's own `build_answer()` and `answer_card()` methods. The integration never calculates intervals, due dates, stability, difficulty, or retrievability itself.
+
+Tickets also provide:
+
+- exactly one review-log entry during normal retries;
+- idempotent replay when the same ticket and rating are submitted again;
+- an explicit conflict when a consumed ticket is reused with a different rating;
+- one active review session per profile, preventing competing chat sessions;
+- explicit errors for stale cards, collection changes, profile changes, and unverified Anki versions;
+- recovery and safe abandonment without silently scheduling a card.
+
+### Anki MCP: make rating and continuation atomic
+
+The maintained MCP derivative adds `get_next_due_card`, `rate_card_and_get_next`, active-review status, recovery, and abandonment tools. It transports the opaque session ID and ticket without exposing them in learner-facing text. Rating and fetching the scheduler-selected next card happen as one operation, which keeps learning and relearning cards aligned with Anki's live queue.
+
+It retains a bounded legacy path for stock AnkiConnect, but a ticket-capable installation fails closed when its exact Anki version has not passed the compatibility gate. It does not silently fall back to generic card-ID scheduling after an ambiguous ticketed failure.
+
+### Chat-review skill: keep authority with the learner
+
+The skill caches the ticket with the currently displayed card, requires an explicit learner rating, passes the ticket exactly once, and replaces its state atomically with the returned next card. It never treats the model's `Good` or `Again` judgment as scheduling permission. Recovery rules prevent a lost conversation state or transport error from becoming a duplicate or guessed review.
+
+Some note types include an optional field named `AI Grader Instructions`, `Grader Notes`, or similar. That field is plain note metadata, not a dependency on the removed AI grader add-on. Codex may use it to define required facts, accepted alternatives, or common material errors during chat grading. AnkiConnect and the MCP simply transport the field with the note. Cards without grader instructions work normally from their prompt, back, and note-type contract.
+
+### Version gates and disposable verification
+
+Scheduler internals can change between Anki releases. The maintained stack therefore admits only exact versions listed in `versions.env` after they pass disposable tests. The gate covers new, learning, review, and relearning cards under all four ratings, queue reordering, exactly-once review logs, FSRS enabled and disabled, and a localhost-only sync round trip. It never uses a real profile or AnkiWeb credentials.
+
+Keeping the coordinated source in one repository makes these cross-project changes reproducible, reviewable, testable, and reversible. The pinned upstream revisions and modification boundaries are recorded in [SOURCE_PROVENANCE.md](SOURCE_PROVENANCE.md).
+
+## Installation
+
+There are two useful installation levels. Choose only what you need.
+
+### 1. Skills only
+
+Use this when you already have a compatible Anki MCP/AnkiConnect setup or only want the card-authoring and analysis instructions.
 
 ```sh
+git clone https://github.com/EthanWhittier/anki-codex-skills.git
+cd anki-codex-skills
+mkdir -p ~/.codex/skills
 cp -R skills/* ~/.codex/skills/
 ```
 
-Restart Codex so it discovers the installed skills. Keep Anki open whenever you create, inspect, analyze, or review cards.
+Restart Codex so it discovers the skills. Stock AnkiConnect can support inspection and a legacy review path, but it does not provide the maintained ticket guarantees described above.
 
-For the complete maintained review stack, build from the consolidated source:
+### 2. Complete ticketed chat-review stack
+
+This installs the maintained AnkiConnect derivative, builds the MCP server, installs the chat-review skill, and updates the `anki-mcp` entry in `~/.codex/config.toml`.
+
+First build the source:
 
 ```sh
-cd anki-ai-grader/local-review-stack
+cd anki-codex-skills/local-review-stack
 ./scripts/build.sh
-./scripts/verify.sh
 ```
 
-The build script installs Node dependencies only when needed, type-checks and builds the MCP server, and packages the maintained AnkiConnect source. The verification workflow uses disposable collections and a localhost-only sync server; it does not open a real Anki profile.
+`build.sh` runs `npm ci` when dependencies are absent, type-checks and builds the MCP server, renders the tested-version compatibility manifest, and creates a packaged AnkiConnect build under `dist/`.
 
-If you use a local Anki MCP server, add its command to `~/.codex/config.toml`. Replace the placeholder with the server's real path:
+Next, quit Anki completely. Preview the AnkiConnect installation, then apply it:
+
+```sh
+./scripts/install-anki-connect.sh
+./scripts/install-anki-connect.sh --apply
+```
+
+The installer refuses to run while Anki is open. It moves the previous AnkiConnect directory into a timestamped rollback backup before installing the maintained source. Review the installed AnkiConnect configuration afterward if you previously used a custom API key, CORS origin, bind address, or port.
+
+Start Anki again. Then preview and apply the Codex configuration:
+
+```sh
+./scripts/configure-codex.sh
+./scripts/configure-codex.sh --apply
+```
+
+The script backs up the existing Codex configuration and chat-review skill, installs the maintained skill, and points Codex at the absolute path of the newly built `main-stdio.js`.
+
+Restart Codex completely. Existing tasks and MCP processes do not reload rebuilt JavaScript, changed skill instructions, or `config.toml` in place.
+
+After both Anki and Codex have restarted, run the complete verification gate:
+
+```sh
+./scripts/verify.sh --live
+```
+
+This uses disposable collections and a disposable Anki base. Do not begin real-profile chat review unless verification succeeds and capability detection reports the exact running Anki version as verified.
+
+If you prefer to configure Codex manually, the equivalent entry is:
 
 ```toml
 [mcp_servers.anki-mcp]
 command = "node"
-args = ["/absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
+args = ["/absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
 
 [mcp_servers.anki-mcp.env]
 ANKI_CONNECT_URL = "http://localhost:8765"
 ```
+
+### Rollback
+
+Quit Anki, preview the rollback, and apply it only when ready:
+
+```sh
+cd local-review-stack
+./scripts/rollback.sh
+./scripts/rollback.sh --apply
+```
+
+Restart Anki and Codex afterward, then run a disposable verification before resuming real review. See [the local stack documentation](local-review-stack/README.md) for version upgrades, candidate-version testing, recovery semantics, and rollback selection.
 
 ## Create a deck and cards
 
@@ -160,11 +246,9 @@ These examples show the intended balance: accept correct meaning without requiri
 │   ├── chat-review-example.png
 │   ├── negative-review-example.png
 │   └── positive-review-example.png
-├── anki-ai-grader/
-│   ├── ai_grader/
-│   ├── local-review-stack/
-│   │   ├── anki-connect/
-│   │   └── anki-mcp-server/
+├── local-review-stack/
+│   ├── anki-connect/
+│   ├── anki-mcp-server/
 │   └── scripts/
 ├── skills/
     ├── add-anki-cards/

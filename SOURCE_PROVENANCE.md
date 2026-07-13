@@ -5,14 +5,14 @@ This file records how the consolidated source snapshot was assembled. It complem
 ## Original local components
 
 - Codex skills were synchronized from the active personal skill directories on 2026-07-12.
-- The AI typed-answer grader, learning-strategy documentation, style tools, installer, and local review orchestration were synchronized from the working tree of `EthanWhittier/anki-ai-grader-addon` on 2026-07-12.
-- That source working tree contained intentional uncommitted changes. The consolidated snapshot preserves those source changes rather than only the last upstream commit.
+- The local review orchestration and coordinated AnkiConnect/Anki MCP modifications were synchronized from the working tree of `EthanWhittier/anki-ai-grader-addon` on 2026-07-12.
+- That source working tree contained intentional uncommitted review-stack changes. The consolidated snapshot preserves those source changes rather than only the last upstream commit.
 
 ## AnkiConnect derivative
 
 - Upstream repository: `https://github.com/FooSoft/anki-connect.git`
 - Base commit: `4064fa142785975255457abd6a496015f5b71f38`
-- Snapshot location: `anki-ai-grader/local-review-stack/anki-connect/`
+- Snapshot location: `local-review-stack/anki-connect/`
 - Modification status: modified and extended locally
 - License: GPL-3.0-or-later; retained in the snapshot
 
@@ -21,7 +21,7 @@ This file records how the consolidated source snapshot was assembled. It complem
 - Upstream repository: `https://github.com/ankimcp/anki-mcp-server.git`
 - Base commit: `7d017e787785963c61cd30ad176d50c9c7f93959`
 - Upstream version at snapshot: `0.18.5`
-- Snapshot location: `anki-ai-grader/local-review-stack/anki-mcp-server/`
+- Snapshot location: `local-review-stack/anki-mcp-server/`
 - Modification status: one local commit plus additional working-tree changes
 - License at the pinned revision: MIT; retained in the snapshot
 

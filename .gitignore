@@ -5,5 +5,3 @@ node_modules/
 dist/
 backups/
 *.log
-*.ankiaddon
-meta.json

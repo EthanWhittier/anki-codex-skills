@@ -32,7 +32,7 @@ Expected local server config:
 ```toml
 [mcp_servers.anki-mcp]
 command = "node"
-args = ["/absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
+args = ["/absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
 
 [mcp_servers.anki-mcp.env]
 ANKI_CONNECT_URL = "http://localhost:8765"
@@ -52,7 +52,7 @@ pkill -TERM -f "/node_modules/.bin/ankimcp --stdio"
 4. If the local build is missing or stale:
 
 ```sh
-cd /absolute/path/to/anki-codex-skills/anki-ai-grader/local-review-stack/anki-mcp-server
+cd /absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server
 npm install
 npm run build
 ```
@@ -188,7 +188,7 @@ Do not summarize between cards.
 
 ## Strict Grading Policy
 
-Use this skill's policy, adapted from but independent of the AI typed-answer grader add-on. Changes here do not require changing the add-on prompt.
+Use this skill's self-contained semantic grading policy. It does not depend on a separate Anki grading add-on.
 
 - Judge meaning, not wording overlap.
 - Treat the reference answer as strong evidence about the intended answer, not a required transcript.
