@@ -1,6 +1,6 @@
 interface:
   display_name: "Chat Anki Review"
-  short_description: "Review fixed and open-response Anki cards"
+  short_description: "Review Anki cards, including stepwise exercises"
   default_prompt: "Use $chat-anki-review to study my fixed-answer, open-response, or generated-problem Anki cards from a deck I name."
 
 dependencies:

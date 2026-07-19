@@ -17,6 +17,7 @@ Use this reference when a note type supports AI grading or when designing concep
 1. Identify the learning target.
    - Ask: What should the learner understand or be able to do later?
    - Ask: What future mistake is this card preventing?
+   - Ask the learner how important the topic is and how many cards it warrants before treating complexity as a reason for a richer sequence.
    - Do not create the card while the underlying concept is still unresolved.
 
 2. Choose the card role.
@@ -28,10 +29,14 @@ Use this reference when a note type supports AI grading or when designing concep
 3. Write the front.
    - State whether the learner should define, distinguish, explain, predict, diagnose, apply, or provide an example or counterexample.
    - Cue the kind and depth of answer without revealing it.
+   - Separate supplied facts and constraints from learner actions. Use direct procedural wording.
+   - Do not visually emphasize or quote the answer when identification is being tested.
+   - Ask for comparison with an alternative only when making that contrast is itself the learning target.
    - Avoid broad prompts whose grader instructions secretly demand several unstated facts.
 
 4. Write the back.
    - Give the smallest sufficient correct answer for the task the front asks.
+   - For an intentional extended worksheet, give part-specific anchors and keep the ordered parts aligned with stepwise review.
    - Include only meaning that should influence grading.
    - Prefer a crisp conceptual anchor over a long textbook paragraph.
    - Keep teaching commentary, extra examples, and related facts out of the grading anchor unless they are required.
@@ -49,7 +54,8 @@ Use this reference when a note type supports AI grading or when designing concep
    - Pair rules with mechanisms, allowed applications, and failure cases.
    - Add contrast cards for confusable concepts.
    - Add transfer cards only after the foundational concept is understood.
-   - Track coverage without treating every nearby topic as an immediate gap.
+   - Track coverage and the learner-approved card budget without treating every nearby topic as an immediate gap or completing the full card-type palette.
+   - Concentrate mechanisms, error diagnosis, transfer, and extended worksheets on complicated, confusable, or high-leverage topics.
 
 ## Card-Type Palette
 
@@ -64,6 +70,7 @@ Use this reference when a note type supports AI grading or when designing concep
 - **Error diagnosis:** What is wrong with this reasoning or move?
 - **Failure mode:** What goes wrong when a restriction is violated?
 - **Transfer/analogy:** How does the same structure appear in a new setting?
+- **Extended worksheet:** Work through an ordered, high-value synthesis one part at a time.
 
 ## Alignment Audit
 
@@ -74,6 +81,7 @@ Before adding, check:
 - Does the back answer exactly what the front asks?
 - Do grader instructions require any unstated facts?
 - Is the reference back so narrow that it would reject valid reasoning?
-- Is the card testing one retrievable unit?
+- Is the card testing one retrievable unit or one explicitly chosen coherent synthesis?
+- If it is multi-part, does every part serve the declared target and have its own visible prompt and grading criterion?
 - Does the learner understand the concept rather than merely recognize wording?
 - Does this card prevent a useful future mistake or support a coherent sequence?
