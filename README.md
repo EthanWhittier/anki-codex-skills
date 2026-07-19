@@ -18,6 +18,7 @@ An integrated, local-first system for building, inspecting, analyzing, grading, 
 | `inspect-anki` | Inspect decks, note types, fields, cards, and notes safely. |
 | `analyze-anki-deck` | Analyze a deck's cards, statistics, formulation, and scheduling. |
 | `chat-anki-review` | Run an interactive review session in Codex and schedule each answer only after you choose a rating. |
+| `learn-vocabulary` | Develop and manage vocabulary through a complete Anki learning lifecycle. |
 
 ## Requirements
 
