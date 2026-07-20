@@ -43,20 +43,23 @@ The learner may deliberately exceed any numerical recommendation. State the like
 
 After four weeks, inspect backlog, actual review time, recognition relative to the FSRS target, cohort completion, and delayed target-hidden production. When evidence is healthy, recommend increasing either recognition to about ten senses per week or activation to three senses per cohort. Change one dimension at a time so the next audit remains interpretable.
 
-### Default session opening
+### One-command daily session
 
-For a generic “start” or “continue” request, inspect Anki before choosing the agenda. Briefly report:
+For a generic “Let's study my vocab system,” “start,” or “continue” request, run the bundled `scripts/vocab_state.py` first. Do not reconstruct state from chat memory or ask the learner what kind of vocabulary work to do.
 
-- due recognition, usage, and support work;
-- the current activation cohort and today's unfinished phase, if any;
-- deferred candidate count and the strongest next candidate;
-- whether the review burden permits new intake.
+The script returns an ordered agenda from:
 
-Then ask one opening question: whether the learner has a new word or phrase from a real encounter. Capture the word plus context first when available, but accept a word-only capture and label the missing context. Recommend either resolving it now or placing it in the suspended inbox; favor deferral when overdue work is already heavy.
+1. due, learning, and scheduler-available new reviews;
+2. the first missing task in every active sense-frame's earliest unlocked mastery phase;
+3. a cohort decision only when all gates pass and day 15 has arrived;
+4. one inbox candidate when review burden and active work permit onboarding;
+5. capture or discovery only when nothing scheduled remains.
 
-When there is no new encounter, begin the highest-priority pending work: due review, then scheduled activation practice, then an inbox candidate. If nothing is pending, help source one high-value candidate. After each activity, recommend the next unfinished item without making the learner reconstruct the workflow.
+Execute the full agenda in one roughly 15–20 minute session. After each activity, continue to the next automatically. Use `chat-anki-review` for live scheduling and keep Anki ratings learner-controlled. After each activation task, normalize and record the approved non-sensitive evidence through `scripts/record_evidence.py`; this makes interrupted sessions resumable without chat memory. Ask only meaning-bearing questions, review answers, or consequential choices; do not ask the learner to select a phase, remember a date, count cohort days, inspect decks, or issue a second command for activation.
 
-Do not use this opening question when the request already names the task. Start an explicit study, new-word, activation, repair, or audit request directly.
+If a day is missed, resume the earliest incomplete gate from durable Anki state. Do not cram missed exercises, skip ahead because time elapsed, or credit evidence that was never produced. Accept spacing holds when evidence finishes before the next minimum-day unlock.
+
+An explicit new-word, capture-only, activation, repair, audit, or review request starts that named route directly.
 
 ## 2. Discovery and candidate capture
 
@@ -73,7 +76,7 @@ For every candidate, preserve the form, full encounter, source, date when known,
 
 When the learner is ready, resolve the candidate immediately. When they are not, use the approved queue. A queue item is not a learning card and must not become due. Periodically prune duplicates, already-known items, low-value curiosities, and words whose useful sense cannot be recovered.
 
-For fast capture, accept `Capture only: WORD — optional context/source` or an equivalent imperative. Perform the candidate procedure in `anki-schema.md` without starting research or the semantic interview. Treat the command itself as authorization for that narrowly scoped candidate write. If only the form is supplied, mark context/source as missing and revisit them during onboarding.
+For fast capture, accept `Capture only: WORD — optional context/source` or an equivalent imperative. Run `scripts/capture_candidate.py` with the authorization guard; do not hand-build the candidate operation. The script performs sync, duplicate checks, canonical note verification, inbox creation when needed, candidate add/update, suspension, verification, and final sync. If only the form is supplied, it marks context/source as missing for later onboarding.
 
 At later generic starts, include the inbox count and strongest candidate in the state brief. When due review and scheduled activation are current, recommend the strongest candidate using recurrence, likely utility, expressive need, and encounter quality. Preserve deferred candidates until they are onboarded, rejected, merged as duplicates, or explicitly retired.
 
@@ -172,6 +175,10 @@ Practice should move through:
 
 Give separate feedback on meaning, syntax, collocation, register, and discourse effect. A sentence can be grammatical yet pragmatically unnatural. Prefer a simpler familiar word when the target adds no useful precision.
 
+Use `activation-evidence.md` to select and record the exact next task. Calendar dates unlock later phases but never complete earlier ones. An Anki Usage review may fulfill a matching activation task; record it once after rating and do not assign duplicate transient practice.
+
+For speech-oriented work, route an explicit driving, car, hands-free, or Voice request through `voice-bridge.md`. Generate the packet from current durable state, pause the main branch, and resume after validating and recording the returned bridge report. Never perform Anki scheduling inside the Voice offshoot.
+
 ## 8. Real-world evidence
 
 Invite, but do not force, the learner to notice:
@@ -205,6 +212,7 @@ Do not solve a meaning problem with more repetitions of the same ambiguous promp
 ### End of each session
 
 - verify and sync approved writes;
+- verify activation event IDs and recomputed mastery state;
 - state current stage and next evidence;
 - preserve unresolved questions;
 - report review burden when it changed.

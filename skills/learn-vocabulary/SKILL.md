@@ -1,16 +1,15 @@
 ---
 name: learn-vocabulary
 description: >-
-  Guide learner-authored vocabulary development through the complete Anki lifecycle:
-  capture a word in context, elicit the learner's own understanding and connections,
-  verify an authoritative sense definition and current usage, build a grounded semantic
-  packet, create and verify minimal AI-graded Anki notes, run selective two-week
-  activation cohorts for writing and speech, diagnose sense/collocation/register errors,
-  promote items through recognition, precision, activation, integration, and maintenance,
-  and audit progress. Use when the user asks to start, discover, capture, prioritize, learn,
-  add, activate, practice, distinguish, repair, review, audit, maintain, retire, or otherwise
-  manage English vocabulary in the dedicated Vocabulary Anki system; prefer this over
-  generic add-anki-cards for vocabulary lifecycle work.
+  Manage learner-authored English vocabulary through its full Anki lifecycle: contextual
+  capture, sense resolution, authoritative definition and usage checks, semantic grounding,
+  minimal AI-graded notes, scheduled review, selective speech/writing activation,
+  error repair, promotion, maintenance, and audits. Use for the one-command daily controller
+  (“let's study my vocab system”), quick suspended-inbox capture (“capture only” or “inbox
+  this”), hands-free ChatGPT Voice practice (“I’m driving,” “car mode,” or “ready for Voice”),
+  or requests to discover, learn, add, activate, distinguish, review, audit, maintain, or
+  retire vocabulary in the dedicated Vocabulary Anki system. Prefer this over generic
+  add-anki-cards for vocabulary lifecycle work.
 ---
 
 # Learn Vocabulary
@@ -37,6 +36,21 @@ Read the relevant bundled reference before acting:
 - Read [semantic-packet.md](references/semantic-packet.md) for onboarding a word, verifying definitions, or authoring a sense record.
 - Read [lifecycle.md](references/lifecycle.md) for promotion, activation cohorts, integration, maintenance, repair, or progress audits.
 - Read [anki-schema.md](references/anki-schema.md) before any Anki read or write in this system.
+- Read [activation-evidence.md](references/activation-evidence.md) for daily activation, mastery gates, evidence recording, interruption recovery, or cohort decisions.
+- Read [voice-bridge.md](references/voice-bridge.md) for driving, car, hands-free, ChatGPT Voice, Voice prompt, or pasted Voice-report requests.
+
+## Bundled controllers
+
+- Resolve scripts relative to this `SKILL.md`; never assume the conversation workspace is the skill directory.
+- Run `scripts/vocab_state.py` at the start of every generic daily study request. Treat its JSON agenda as the deterministic routing layer; use the companion skills to perform the work.
+- Run `scripts/capture_candidate.py WORD --context CONTEXT --source SOURCE --authorized-capture-only` only after an exact capture-only imperative. The guard flag records that the user authorized only the provisional inbox operation.
+- Run `scripts/record_evidence.py` after each verified in-chat activation task. For Voice, semantically review every assigned task and submit the complete report as one atomic event batch; never record its tasks one at a time. Pass only normalized, non-sensitive metadata and the matching authorization guard.
+- Run `scripts/voice_prompt.py --authorized-voice-session` to generate a phase-specific, paste-ready prompt for ChatGPT Voice and durably register its session ID and fingerprint. The learner's Voice request authorizes only that session-metadata write.
+- Run `scripts/validate_voice_report.py` on the pasted report before semantic review or evidence recording. It is read-only and rejects stale, mismatched, or structurally invalid reports.
+- Run `scripts/manage_voice_sessions.py` with its guard after an explicit cancel request, or to remove expired Voice metadata during an authorized daily session.
+- Use `scripts/migrate_activation_schema.py` only for an explicitly approved 17-to-19-field Vocabulary Sense migration. It requires a clean normal pre-sync and leaves Anki's forced one-way post-migration sync for a separately confirmed local Upload.
+- If a script reports an Anki sync conflict, schema mismatch, connection error, active inbox card, or another unexpected condition, stop that route and report it. Do not improvise a write.
+- The scripts own state recovery, minimum-spacing calculation, mastery-gate selection, evidence validation, duplicate checks, suspension, and verification. They do not answer prompts, choose Anki ratings, resolve senses, or make promotion decisions for the learner.
 
 ## Interaction contract
 
@@ -49,7 +63,8 @@ Read the relevant bundled reference before acting:
 7. Keep dictionary wording, the learner's paraphrase, and Codex's explanation visibly distinct.
 8. Do not create a review card while the underlying sense remains unresolved.
 9. Recommend the next step and review load; ask the learner for meaning-bearing answers and consequential choices, not system administration.
-10. Resume from durable Anki state when possible. Do not depend on chat memory for a word's stage or identity.
+10. Resume from durable Anki state when possible. Do not depend on chat memory for a word's stage, identity, completed activation task, or Voice result.
+11. Treat elapsed time as a minimum-spacing constraint; require recorded mastery evidence before phase advancement.
 
 ## Recommended four-week calibration
 
@@ -73,22 +88,25 @@ These numbers are advisory. If the learner explicitly chooses more, explain the 
 5. Ask one question or present one review prompt at a time.
 6. End by recording approved changes and stating the next evidence needed.
 
-## Default “start my vocabulary system” controller
+## One-command daily study controller
 
-Use this controller when the learner gives a generic start/resume request without naming a word or activity:
+Use this controller for “Let's study my vocab system,” “study my vocabulary,” or another generic study/start/resume request. The learner intends one session per day and should not have to name phases, remember dates, request activation separately, or administer the inbox.
 
-1. Sync and inspect setup health, due recognition/usage/support cards, active cohort work, deferred candidates, and current review burden.
-2. Give a compact state brief and recommend today's order; do not dump collection data.
-3. Ask whether the learner has a newly encountered word or phrase to capture. If so, request the word and its sentence/situation together when available; never block quick capture because context is missing.
-4. Route the next action:
-   - new encounter: capture it, then recommend onboarding now or deferring it based on review load;
-   - no new encounter and cards are due: begin a guided due-card review immediately;
-   - no due cards but activation work is pending: begin the current cohort exercise;
-   - no due work but candidates exist: recommend one candidate and begin onboarding after confirmation;
-   - nothing pending: ask whether to use a learner-selected word, analyze an approved language sample, or receive one agent recommendation.
-5. After completing one branch, return to the state brief and recommend the next unfinished action until the learner ends the session or reaches their review budget.
+1. Run `scripts/vocab_state.py`. It performs the standing-authorized sync and returns setup health, live review inventory, active cohort day/phase, inbox candidates, warnings, and an ordered agenda.
+2. Give a one- or two-sentence state brief. Do not ask whether a new word was encountered and do not make the learner choose the agenda.
+3. Execute every agenda item in order within the roughly 15–20 minute daily budget:
+   - use `chat-anki-review` for cards exposed by the live scheduler, including its user-controlled rating flow;
+   - resume the first missing task in each active sense-frame's earliest unlocked phase;
+   - record and verify matching non-sensitive evidence after each completed task;
+   - perform a cohort decision only when the script reports `decision-ready`;
+   - onboard the strongest inbox candidate only when the agenda includes it, eliciting one meaning-bearing answer at a time;
+   - offer capture/discovery only when no scheduled work exists.
+4. After each item, continue automatically to the next agenda item. Do not require “practice,” “continue,” or another trigger. A learner may stop or time-box the session at any point.
+5. End only when the agenda is complete, the learner stops, the daily budget is reached, or a genuine blocker requires input. State what was completed and what the next daily invocation will recover.
 
-An explicit request overrides this controller. “Study my vocabulary” starts the due-review route without first asking for a new word. “I have a new word” starts capture/onboarding without forcing a review detour.
+The cohort date sets the earliest unlock for each phase; the evidence ledger controls actual advancement. If the learner misses a day, do not create catch-up work or pretend the missed evidence exists. Resume the earliest unfinished phase. When a gate finishes early, accept the script's spacing hold instead of inventing permanent reviews.
+
+An explicit request overrides the controller. “I have a new word” starts onboarding without forcing a review detour. Capture-only imperatives use the shortcut below and return immediately.
 
 ## Route the request
 
@@ -106,7 +124,7 @@ If several candidates arrive together, place them in a lightweight queue and gui
 
 Recognize requests such as `Capture only: WORD — CONTEXT`, `Inbox this: WORD`, or “save this word for later.” Do not begin onboarding, browse definitions, or ask meaning questions.
 
-Treat the imperative capture request as exact authorization for the provisional candidate operation only: sync, check duplicates, create `Vocabulary::Inbox` if this is the first capture, add or update the candidate, suspend and verify every generated card, then sync. Context and source are strongly preferred but optional; label missing information rather than fabricating it. If the same resolved sense already exists, do not alter it under capture-only authority; report the match. Give a one-line confirmation and return to the prior activity unless the learner asks to onboard immediately.
+Treat the imperative capture request as exact authorization for the provisional candidate operation only. Run `scripts/capture_candidate.py` with the supplied word, context, and source plus `--authorized-capture-only`; do not reimplement the operation manually. Context and source are strongly preferred but optional; the script labels missing information rather than fabricating it. If the same resolved lemma exists, report the match without editing it. Give a one-line confirmation and return to the prior activity unless the learner asks to onboard immediately.
 
 ### New word or sense
 
@@ -127,6 +145,14 @@ Read `lifecycle.md`, inspect eligible sense notes and current load, then recomme
 ### Writing, speaking, or real-world use
 
 Coach the learner at the current stage. For active access, start from a communicative intention with the target hidden. Check meaning, grammar, collocation, register, and discourse effect separately. Record genuine evidence only after the learner reports or demonstrates it; never infer spoken performance from typed work.
+
+### ChatGPT Voice offshoot
+
+For “I’m driving,” “car mode,” “ready for Voice,” or a Voice-prompt request, read `voice-bridge.md` and enforce its parked gate before running tools or displaying copyable material. Once the learner is parked, run the main state controller, generate the exact packet with `scripts/voice_prompt.py --authorized-voice-session`, present it in one copyable code block, and pause the main activation branch. Do not conduct Anki ratings or visual work in Voice.
+
+Require setup before driving and keep moving-vehicle practice fully audio-only. Once parked, have the learner ask the same Voice conversation `Give me the bridge report`, then paste the JSON into Codex. Validate it against the frozen sense, correct material errors, preserve every assigned outcome—including fail or unverified—and record the complete report atomically as `voice-report` evidence before resuming the main flow. Never claim Codex heard the audio or that the transcript is verbatim.
+
+When a learner pastes a `vocab-voice-bridge/v1` report without an explicit preface, infer this route immediately.
 
 ### Confusion or repeated miss
 
@@ -187,6 +213,7 @@ Before writing, show any substantive correction and the exact front/back when th
 - Ask the learner to say a response aloud before typing or summarizing it when audio is unavailable. Never claim to have graded unheard speech.
 - Keep generated contexts variable but freeze the sourced definition, target sense, required components, and material-error rubric.
 - Require evidence from delayed, varied retrieval before promotion. See `lifecycle.md` for criteria.
+- Recover mastery from the activation ledger and minimum-spacing gates in `activation-evidence.md`; never advance solely because calendar days passed.
 - Do not promote every recognized word. Keep a broad recognition stream and a narrow, deliberate activation stream.
 - Treat real-world use as evidence, not as proof by itself: verify that the sense, construction, and register were appropriate.
 

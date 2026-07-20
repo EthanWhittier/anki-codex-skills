@@ -34,6 +34,8 @@ Expected fields in order:
 15. `Related Senses`
 16. `Source Encounter`
 17. `Learning Stage`
+18. `Activation State`
+19. `Activation Evidence`
 
 The template should create one `Sense Recognition` card. Its front presents `Front`. Its back presents the compact `Back`, then the authoritative definition and citation, with the larger grounding and usage packet available as secondary reference.
 
@@ -41,7 +43,11 @@ Store material spelling, inflection, stress, or derivative information in `Usage
 
 The model is AI-grader-compatible because it has `Front`, `Back`, and `AI Grader Instructions`. Keep `Back` as the smallest grading anchor; do not make the learner reproduce every metadata field.
 
+Keep `Activation State` and `Activation Evidence` hidden from card templates. Store only versioned JSON defined in `activation-evidence.md`; never put raw voice transcripts or sensitive learner responses in these fields. A pending Voice entry may temporarily retain its exact generated coaching packet for recovery, but never a learner response; remove it after ingestion, cancellation, replacement, or expiry. Candidate and non-active notes may leave both fields empty. Initialize both fields when a sense enters activation.
+
 If the model is missing or fields differ, inspect existing models and tell the learner. Do not silently create or migrate a model. Use `add-anki-cards` to propose and obtain approval for setup changes.
+
+For the approved 19-field activation-ledger migration, use `scripts/migrate_activation_schema.py`. It may append the two fields and initialize active notes only with `--authorized-schema-migration`. A field addition forces Anki's one-way full-sync safeguard: the script must first complete a normal sync, then verify the local migration without attempting a final normal sync. Stop and obtain the learner's explicit choice before using Anki's Sync button and choosing Upload to preserve the verified local migration. Never choose Upload or Download on the learner's behalf.
 
 ## Role-specific notes
 
@@ -85,6 +91,8 @@ Before adding tags, call `getTags` and reuse the established hierarchy. Before c
 
 Evidence tags record only coarse type and month. Add them only for verified or clearly learner-reported evidence, with approval. Do not put private sentence content into tags.
 
+The master fields hold the detailed non-sensitive activation ledger. Completing a practice response or pasting a requested Voice bridge report authorizes the matching metadata append only when `Activation State.recording_authorized` is true. Use `scripts/record_evidence.py`; stage changes and all other writes remain separately controlled.
+
 ## Durable candidate inbox
 
 Use this only when the learner wants to save a candidate without completing onboarding:
@@ -120,6 +128,7 @@ On every candidate scan, inspect all notes in `Vocabulary::Inbox`, including man
 6. Inspect linked usage/support notes by the same stable ID tag.
 7. Inspect every note in `Vocabulary::Inbox` when selecting or auditing candidates, including manually captured notes with incomplete tags.
 8. Avoid dumping raw HTML or entire collections to the learner.
+9. Parse Activation State and Activation Evidence for active senses; recompute mastery gates rather than advancing from elapsed days alone.
 
 ## Write workflow
 
@@ -131,6 +140,7 @@ On every candidate scan, inspect all notes in `Vocabulary::Inbox`, including man
 6. Add or change tags only as part of the approved lifecycle action.
 7. Verify returned IDs with `notesInfo` and inspect rendered cards when templates or rich HTML changed.
 8. Sync after verification without requesting separate permission.
+9. For activation evidence, use the guarded evidence script, verify event IDs and derived state, and avoid raw transcript storage.
 
 Treat every creation, field update, tag change, suspension, move, rating, and deletion as a collection modification. Do not rate a card outside a learner-controlled review.
 

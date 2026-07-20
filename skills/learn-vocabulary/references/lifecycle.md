@@ -69,33 +69,37 @@ Use when an item is no longer valuable enough for active maintenance. Prefer sus
 
 During the first four weeks, recommend two sense-frames per cohort. After successful calibration, recommend three. Treat six to eight simultaneous active items as a caution threshold: explain the divided-practice cost before exceeding it, but honor an explicit learner override.
 
-### Days 1–2: anchor
+Use `activation-evidence.md` as the source of truth. The bundled controller recomputes mastery from the append-only evidence ledger. The day ranges below are earliest unlock windows, not automatic advancement. Run the first unfinished task in the earliest unlocked phase; never make the learner schedule or request it manually.
+
+If the learner misses a day, keep the earliest unfinished phase without stacking catch-up work. Enter a spacing hold when a gate finishes before the next phase unlocks. At day 15 or later, offer a promote/extend/repair/demote decision only after every evidence gate passes.
+
+### Earliest days 1–2: anchor
 
 - revisit definition, source context, and boundaries;
 - verify pronunciation, stress, and the useful inflected form when active speech is a goal;
 - say two simple uses with the word visible;
 - confirm the learner still prioritizes activation.
 
-### Days 3–5: distinguish
+### Earliest days 3–5: distinguish
 
 - compare the main sibling sense or near-neighbor;
 - complete one grammar-frame or collocation task;
 - diagnose one non-example or misuse.
 
-### Days 6–9: controlled production
+### Earliest days 6–9: controlled production
 
 - produce uses in two different scenarios;
 - vary tense, subject, domain, or register only when natural;
 - give feedback on meaning, syntax, collocation, and pragmatics separately.
 
-### Days 10–12: lexical access
+### Earliest days 10–12: lexical access
 
 - hide the target word;
 - cue the intended discourse move or meaning;
 - record whether the target came to mind before revealing it;
 - separate “a good alternative answer” from “retrieved the target.”
 
-### Days 13–14: integration
+### Earliest days 13–14: integration
 
 - complete one 30–60 second spoken response or short paragraph;
 - handle one unfamiliar generated context;
@@ -103,6 +107,8 @@ During the first four weeks, recommend two sense-frames per cohort. After succes
 - decide promote, extend activation, repair, or demote.
 
 Do not schedule all activities as permanent cards. Use one generative blueprint plus transient guided practice when possible.
+
+When speech is a goal, the ChatGPT Voice offshoot in `voice-bridge.md` may supply structured speech, pronunciation, and retrieval evidence. Label it `voice-report`, validate the bridge report against the frozen sense, and never treat the transcript as verbatim.
 
 ## 3. Promotion evidence
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Guided Vocabulary Learning"
-  short_description: "Guide vocabulary from discovery to active use"
-  default_prompt: "Use $learn-vocabulary to manage my vocabulary system or guide a word from discovery through active use and maintenance."
+  short_description: "Run daily vocab study, capture, and Voice practice"
+  default_prompt: "Use $learn-vocabulary to run today’s complete vocabulary session, including mastery tracking and Voice practice when appropriate."

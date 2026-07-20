@@ -64,6 +64,8 @@ When listening or pronunciation is a stated goal, use verified audio only when a
 - grader-required components and accepted equivalents;
 - material confusions to reject;
 - related senses, not automatically scheduled.
+- activation goals (`speech`, `writing`, or both), Voice enablement, and standing non-sensitive evidence-recording authorization when activation is approved;
+- initialized `Activation State` and empty `Activation Evidence` using the schemas in `activation-evidence.md`.
 
 ## Definition card policy
 
