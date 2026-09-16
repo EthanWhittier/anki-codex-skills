@@ -4,9 +4,10 @@ description: >-
   Manage learner-authored English vocabulary through its full Anki lifecycle: contextual
   capture, sense resolution, authoritative definition and usage checks, semantic grounding,
   minimal AI-graded notes, scheduled review, selective speech/writing activation,
+  proactive pronunciation-only Voice checks,
   error repair, promotion, maintenance, and audits. Use for the one-command daily controller
   (“let's study my vocab system”), quick suspended-inbox capture (“capture only” or “inbox
-  this”), hands-free ChatGPT Voice practice (“I’m driving,” “car mode,” or “ready for Voice”),
+  this”), ChatGPT Voice practice (“ready for Voice” or a Voice-prompt request),
   or requests to discover, learn, add, activate, distinguish, review, audit, maintain, or
   retire vocabulary in the dedicated Vocabulary Anki system. Prefer this over generic
   add-anki-cards for vocabulary lifecycle work.
@@ -37,7 +38,7 @@ Read the relevant bundled reference before acting:
 - Read [lifecycle.md](references/lifecycle.md) for promotion, activation cohorts, integration, maintenance, repair, or progress audits.
 - Read [anki-schema.md](references/anki-schema.md) before any Anki read or write in this system.
 - Read [activation-evidence.md](references/activation-evidence.md) for daily activation, mastery gates, evidence recording, interruption recovery, or cohort decisions.
-- Read [voice-bridge.md](references/voice-bridge.md) for driving, car, hands-free, ChatGPT Voice, Voice prompt, or pasted Voice-report requests.
+- Read [voice-bridge.md](references/voice-bridge.md) for ChatGPT Voice, Voice-prompt, or pasted Voice-report requests.
 
 ## Bundled controllers
 
@@ -48,6 +49,7 @@ Read the relevant bundled reference before acting:
 - Run `scripts/voice_prompt.py --authorized-voice-session` to generate a phase-specific, paste-ready prompt for ChatGPT Voice and durably register its session ID and fingerprint. The learner's Voice request authorizes only that session-metadata write.
 - Run `scripts/validate_voice_report.py` on the pasted report before semantic review or evidence recording. It is read-only and rejects stale, mismatched, or structurally invalid reports.
 - Run `scripts/manage_voice_sessions.py` with its guard after an explicit cancel request, or to remove expired Voice metadata during an authorized daily session.
+- Run `scripts/configure_voice_policy.py` with its guard after the learner approves a pronunciation-only check, changes a word's Voice policy, or explicitly waives or restores one Voice gate.
 - Use `scripts/migrate_activation_schema.py` only for an explicitly approved 17-to-19-field Vocabulary Sense migration. It requires a clean normal pre-sync and leaves Anki's forced one-way post-migration sync for a separately confirmed local Upload.
 - If a script reports an Anki sync conflict, schema mismatch, connection error, active inbox card, or another unexpected condition, stop that route and report it. Do not improvise a write.
 - The scripts own state recovery, minimum-spacing calculation, mastery-gate selection, evidence validation, duplicate checks, suspension, and verification. They do not answer prompts, choose Anki ratings, resolve senses, or make promotion decisions for the learner.
@@ -100,7 +102,9 @@ Use this controller for “Let's study my vocab system,” “study my vocabular
    - record and verify matching non-sensitive evidence after each completed task;
    - perform a cohort decision only when the script reports `decision-ready`;
    - onboard the strongest inbox candidate only when the agenda includes it, eliciting one meaning-bearing answer at a time;
-   - offer capture/discovery only when no scheduled work exists.
+   - offer capture/discovery only when no scheduled work exists;
+   - when the agenda reports `voice-bridge-required`, generate one packet directly; the user-started daily session authorizes that single pending-session registration, and the learner may still defer using it without penalty;
+   - when it reports `voice-bridge-pending`, recover the registered packet or ingest its complete report before creating another one.
 4. After each item, continue automatically to the next agenda item. Do not require “practice,” “continue,” or another trigger. A learner may stop or time-box the session at any point.
 5. End only when the agenda is complete, the learner stops, the daily budget is reached, or a genuine blocker requires input. State what was completed and what the next daily invocation will recover.
 
@@ -130,6 +134,8 @@ Treat the imperative capture request as exact authorization for the provisional 
 
 Run the guided onboarding workflow below. If the learner only wants a quick explanation, teach it without writing to Anki. If they want it captured for learning, complete the semantic packet before proposing a card.
 
+For a recognition-only word whose spelling-to-sound mapping, stress, length, or learner uncertainty makes pronunciation worth checking, proactively offer one pronunciation-only Voice check as part of the card-budget preview. Name the extra task and burden. Do not initialize it without approval, and do not turn the word into a full activation item. On approval, use `scripts/configure_voice_policy.py --pronunciation-only --authorized-voice-policy-change` after the recognition note exists.
+
 ### Existing vocabulary item
 
 Sync and inspect the master sense note, stage, linked usage/support notes, tags, and available scheduling evidence. Resume at the earliest unmet stage rather than restarting the intake interview.
@@ -148,9 +154,11 @@ Coach the learner at the current stage. For active access, start from a communic
 
 ### ChatGPT Voice offshoot
 
-For “I’m driving,” “car mode,” “ready for Voice,” or a Voice-prompt request, read `voice-bridge.md` and enforce its parked gate before running tools or displaying copyable material. Once the learner is parked, run the main state controller, generate the exact packet with `scripts/voice_prompt.py --authorized-voice-session`, present it in one copyable code block, and pause the main activation branch. Do not conduct Anki ratings or visual work in Voice.
+For “ready for Voice,” a Voice-prompt request, or a `voice-bridge-required` agenda item, read `voice-bridge.md`, run the main state controller, generate the exact packet with `scripts/voice_prompt.py --authorized-voice-session`, present any returned copy-without-reading instruction followed by the packet in one copyable code block, and pause the main branch. A user-started daily study session authorizes registration of the one due packet selected by the controller. Do not conduct Anki ratings or visual work in Voice. In target-hidden phases, never name the selected word or sense in commentary; reliability-first packets contain plaintext inert reference data and depend on the learner copying without inspecting it.
 
-Require setup before driving and keep moving-vehicle practice fully audio-only. Once parked, have the learner ask the same Voice conversation `Give me the bridge report`, then paste the JSON into Codex. Validate it against the frozen sense, correct material errors, preserve every assigned outcome—including fail or unverified—and record the complete report atomically as `voice-report` evidence before resuming the main flow. Never claim Codex heard the audio or that the transcript is verbatim.
+For activation senses with speech goals and Voice enabled, require validated Voice evidence for pronunciation, one of the two date-separated hidden retrievals, and the target-hidden integration speech task. Require the other hidden retrieval from a non-Voice source. These are modality gates, not arbitrary session quotas. For pronunciation-only recognition items, require only the validated pronunciation task.
+
+After practice, have the learner ask the same Voice conversation `Give me the bridge report`, then paste the JSON into Codex. Validate it against the frozen sense, correct material errors, preserve every assigned outcome—including fail or unverified—and record the complete report atomically as `voice-report` evidence before resuming the main flow. Never claim Codex heard the audio or that the transcript is verbatim.
 
 When a learner pastes a `vocab-voice-bridge/v1` report without an explicit preface, infer this route immediately.
 
@@ -201,6 +209,8 @@ Ask the learner for one fresh interpretation, boundary judgment, or personally r
 
 State the proposed learning priority and smallest card budget. Default to one master recognition card whose back contains the authoritative definition and expandable grounding. Add precision, active-use, or support cards only when the learner approves the role and load.
 
+When pronunciation merits attention, include a one-time pronunciation-only Voice check in the preview as a separate, optional burden and ask one concise opt-in question. Typical cues include opaque spelling, uncertain stress, an unfamiliar sound sequence, a word encountered only in print, or explicit learner interest. Do not ask mechanically for every recognition word.
+
 ### 8. Write and verify
 
 Before writing, show any substantive correction and the exact front/back when the learner has not already approved them. Use Anki MCP with duplicate prevention. Verify returned note and card IDs, rendered fields, tags, and note type. Sync after successful writes.
@@ -212,6 +222,7 @@ Before writing, show any substantive correction and the exact front/back when th
 - For speech, include prompts that begin from communicative intent without displaying the target word.
 - Ask the learner to say a response aloud before typing or summarizing it when audio is unavailable. Never claim to have graded unheard speech.
 - Keep generated contexts variable but freeze the sourced definition, target sense, required components, and material-error rubric.
+- For speech-enabled activation, treat Voice as required by default at the pronunciation, mixed-modality lexical-access, and spoken-integration gates. A written integration response cannot substitute for the required spoken integration unless the learner explicitly overrides that gate.
 - Require evidence from delayed, varied retrieval before promotion. See `lifecycle.md` for criteria.
 - Recover mastery from the activation ledger and minimum-spacing gates in `activation-evidence.md`; never advance solely because calendar days passed.
 - Do not promote every recognized word. Keep a broad recognition stream and a narrow, deliberate activation stream.
@@ -233,6 +244,7 @@ Do not create a full palette of cards mechanically. Do not wait for a default le
 ## Safety and authority
 
 - The learner controls word priority, activation status, cohort size, and acceptable review burden.
+- The learner may defer Voice for the current session, make Voice optional or off for one word, or waive one Voice gate. Defer without a write; persist word-level policy or gate waivers only after explicit confirmation with `scripts/configure_voice_policy.py`. Never silently credit waived evidence.
 - Treat note creation, edits, tags, stage changes, suspension, deck moves, rating, and deletion as writes.
 - Obtain action-time confirmation unless the learner explicitly authorized the exact change or standing workflow.
 - Treat routine sync as a standing exception to confirmation: run it freely before relevant reads and after verified approved writes. If sync reports a conflict, authentication failure, full-sync direction choice, or unexpected error, stop and report it rather than choosing a potentially destructive resolution.

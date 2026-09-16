@@ -6,7 +6,7 @@ An integrated, local-first system for building, inspecting, analyzing, grading, 
 
 | Component | Purpose |
 | --- | --- |
-| `skills/` | Four Codex skills for card creation, collection inspection, deck analysis, and live chat review. |
+| `skills/` | Six Codex skills for card creation, collection inspection, deck analysis, live chat review, vocabulary learning, and chapter or section study. |
 | `local-review-stack/` | A reproducible ticketed-review stack with maintained AnkiConnect and Anki MCP source snapshots, tests, build scripts, and rollback tooling. |
 | `assets/` | Positive and negative examples of the review experience. |
 
@@ -19,6 +19,7 @@ An integrated, local-first system for building, inspecting, analyzing, grading, 
 | `analyze-anki-deck` | Analyze a deck's cards, statistics, formulation, and scheduling. |
 | `chat-anki-review` | Run an interactive review session in Codex and schedule each answer only after you choose a rating. |
 | `learn-vocabulary` | Develop and manage vocabulary through a complete Anki learning lifecycle. |
+| `study-section` | Guide source-grounded study of a chapter or section through milestones, practice, and saved progress. |
 
 ## Requirements
 
@@ -255,7 +256,9 @@ These examples show the intended balance: accept correct meaning without requiri
     ├── add-anki-cards/
     ├── analyze-anki-deck/
     ├── chat-anki-review/
-    └── inspect-anki/
+    ├── inspect-anki/
+    ├── learn-vocabulary/
+    └── study-section/
 ├── SOURCE_PROVENANCE.md
 └── THIRD_PARTY_NOTICES.md
 ```

@@ -76,7 +76,7 @@ If the learner misses a day, keep the earliest unfinished phase without stacking
 ### Earliest days 1–2: anchor
 
 - revisit definition, source context, and boundaries;
-- verify pronunciation, stress, and the useful inflected form when active speech is a goal;
+- verify pronunciation, stress, and the useful inflected form through validated Voice when active speech uses required Voice;
 - say two simple uses with the word visible;
 - confirm the learner still prioritizes activation.
 
@@ -88,7 +88,7 @@ If the learner misses a day, keep the earliest unfinished phase without stacking
 
 ### Earliest days 6–9: controlled production
 
-- produce uses in two different scenarios;
+- produce uses in two different scenarios through speech or writing;
 - vary tense, subject, domain, or register only when natural;
 - give feedback on meaning, syntax, collocation, and pragmatics separately.
 
@@ -98,6 +98,7 @@ If the learner misses a day, keep the earliest unfinished phase without stacking
 - cue the intended discourse move or meaning;
 - record whether the target came to mind before revealing it;
 - separate “a good alternative answer” from “retrieved the target.”
+- under required Voice policy, collect one Voice pass and one non-Voice pass on different dates.
 
 ### Earliest days 13–14: integration
 
@@ -105,10 +106,11 @@ If the learner misses a day, keep the earliest unfinished phase without stacking
 - handle one unfamiliar generated context;
 - revisit the required definition components after a delay;
 - decide promote, extend activation, repair, or demote.
+- under required Voice policy for speech, require the connected spoken response through Voice; writing cannot silently substitute.
 
 Do not schedule all activities as permanent cards. Use one generative blueprint plus transient guided practice when possible.
 
-When speech is a goal, the ChatGPT Voice offshoot in `voice-bridge.md` may supply structured speech, pronunciation, and retrieval evidence. Label it `voice-report`, validate the bridge report against the frozen sense, and never treat the transcript as verbatim.
+When speech is a goal and Voice is required, the ChatGPT Voice offshoot in `voice-bridge.md` supplies the pronunciation, one lexical-access retrieval, and integration-speech evidence. Label it `voice-report`, validate the bridge report against the frozen sense, and never treat the transcript as verbatim. The learner may defer a session or explicitly make Voice optional/off or waive one gate; persist that override without fabricating evidence.
 
 ## 3. Promotion evidence
 

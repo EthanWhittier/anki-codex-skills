@@ -32,7 +32,7 @@ Expected local server config:
 ```toml
 [mcp_servers.anki-mcp]
 command = "node"
-args = ["/Users/ethanwhittier/Documents/Code/anki-ai-grader-addon/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
+args = ["/absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server/dist/main-stdio.js"]
 
 [mcp_servers.anki-mcp.env]
 ANKI_CONNECT_URL = "http://localhost:8765"
@@ -52,7 +52,7 @@ pkill -TERM -f "/node_modules/.bin/ankimcp --stdio"
 4. If the local build is missing or stale:
 
 ```sh
-cd /Users/ethanwhittier/Documents/Code/anki-ai-grader-addon/local-review-stack/anki-mcp-server
+cd /absolute/path/to/anki-codex-skills/local-review-stack/anki-mcp-server
 npm install
 npm run build
 ```
@@ -160,6 +160,18 @@ Treat any prompt with numbered or explicitly ordered subparts as stepwise by def
 
 If the learner asks for teaching during a step, explain the concept normally without rating or losing the exact active part, then resume that same part when they are ready.
 
+## Omitted Requested Components
+
+Before revealing the answer or issuing a grade, distinguish an omitted requested component from an incorrect answer.
+
+1. If the learner correctly addresses part of an unnumbered compound prompt or the current active part but leaves one or more explicitly requested, separately answerable components unaddressed, preserve the response and ask one concise targeted follow-up for only the missing component. Do not reveal its answer or issue a grade yet.
+2. Combine the original response with the follow-up as one attempt. If the learner supplies the missing component correctly and the combined response satisfies the frozen criteria, issue `✅ Good`; never issue `❌ Again` solely because the component was omitted initially.
+3. If the follow-up is wrong, remains materially incomplete, is declined, or the learner asks to stop or be marked wrong, reveal and grade normally. Use `❌ Again` when the combined attempt still misses a material requirement.
+4. Do not use this completion opportunity to erase a substantive error or contradiction already present in the response. A correct but differently worded answer is not an error.
+5. For numbered or explicitly ordered subparts, continue to use the stepwise protocol. Apply this section within the current active part when that part itself requests multiple components.
+
+Example: if the prompt asks for both a formula and an explanation, and the formula is correct but the explanation is absent, ask the learner to identify what expresses each requested idea. If that follow-up is correct, pass the card.
+
 ## Review Loop
 
 For a multi-part card, the section above replaces the ordinary reveal-and-grade cycle until all parts are finished or the learner explicitly stops.
@@ -168,9 +180,10 @@ For each card:
 
 1. Show only the question/prompt. Keep formatting compact.
 2. Wait for the user's answer.
-3. Reveal the appropriate answer/evaluation: for an ordinary card, use the cached `back`; for a generated-problem card, use the frozen instance-specific solution; for an open-response card, generate a learner-specific evaluation from the frozen contract. Keep hidden metadata and contracts hidden.
-4. Grade strictly for conceptual correctness.
-5. Reply with:
+3. Apply **Omitted Requested Components**. When a targeted follow-up is required, wait for it before revealing or grading; otherwise continue.
+4. Reveal the appropriate answer/evaluation: for an ordinary card, use the cached `back`; for a generated-problem card, use the frozen instance-specific solution; for an open-response card, generate a learner-specific evaluation from the frozen contract. Keep hidden metadata and contracts hidden.
+5. Grade strictly for conceptual correctness.
+6. Reply with:
    - `✅ Good` when correct enough to pass.
    - `❌ Again` when wrong, incomplete, ambiguous, off-topic, materially imprecise, empty, or unusable.
    - Always show the revealed answer or learner-specific evaluation before the grade as a Markdown blockquote.
@@ -178,7 +191,7 @@ For each card:
    - Put a blank line between the grade line and the reason.
    - Keep the reason under 25 words and focused on the answer, not the learner.
    - Do not give a lecture, explanation, mnemonic, or tangent unless the user asks.
-6. Ask for rating confirmation in a compact form:
+7. Ask for rating confirmation in a compact form:
    - `` `1` Again · `2` Hard · `3` Good · `4` Easy ``
    - Only a user-supplied rating value (`1`, `2`, `3`, `4`, or an unambiguous word: `again`, `hard`, `good`, `easy`) counts as confirmation.
    - A standalone `1`, `2`, `3`, `4`, `again`, `hard`, `good`, or `easy` sent after the rating prompt is final authorization to schedule the card.
@@ -187,10 +200,10 @@ For each card:
    - Do not treat `ok`, `next`, `yes`, Enter-like acknowledgements, or silence as permission to rate.
    - If the user says `next` without a rating, ask `Rating?` instead of scheduling the card.
    - Use the user's rating, not the suggested grade, when calling `rate_card_and_get_next`.
-7. Call `rate_card_and_get_next(card_id=<current card id>, rating=<confirmed rating>, deck_name=<deck>, include_learning=true, include_new=true, review_session_id=<cached reviewSessionId>, review_ticket=<cached reviewTicket>)`. Pass the opaque inputs whenever they were returned; use the legacy card-ID form only when both cached values are null.
-8. If it returns `nextCard`, atomically replace the cached review state with the returned `reviewSessionId` and `reviewTicket`, then select its mode using the exact model-and-schema test. For an ordinary card, cache `nextCard.back` and inspect `nextCard.front` for ordered subparts before showing it. For a generated-problem card, complete the full generate, solve, validate, and freeze sequence. For an open-response card, parse and freeze its prompt and contract. Then show the whole prompt for a single-part card or the shared setup plus Part 1 for a multi-part card, with no transition sentence.
-9. If it returns `nextCard: null`, end the session.
-10. Continue until the user explicitly stops or Anki reports no available cards.
+8. Call `rate_card_and_get_next(card_id=<current card id>, rating=<confirmed rating>, deck_name=<deck>, include_learning=true, include_new=true, review_session_id=<cached reviewSessionId>, review_ticket=<cached reviewTicket>)`. Pass the opaque inputs whenever they were returned; use the legacy card-ID form only when both cached values are null.
+9. If it returns `nextCard`, atomically replace the cached review state with the returned `reviewSessionId` and `reviewTicket`, then select its mode using the exact model-and-schema test. For an ordinary card, cache `nextCard.back` and inspect `nextCard.front` for ordered subparts before showing it. For a generated-problem card, complete the full generate, solve, validate, and freeze sequence. For an open-response card, parse and freeze its prompt and contract. Then show the whole prompt for a single-part card or the shared setup plus Part 1 for a multi-part card, with no transition sentence.
+10. If it returns `nextCard: null`, end the session.
+11. Continue until the user explicitly stops or Anki reports no available cards.
 
 Never schedule a card before the user confirms or overrides the rating.
 Never schedule from the model's own recommendation alone.
@@ -215,8 +228,8 @@ Use this skill's policy, adapted from but independent of the AI typed-answer gra
 - Treat the reference answer as strong evidence about the intended answer, not a required transcript.
 - Accept correct paraphrases, equivalent terminology, common abbreviations, harmless formatting differences, and minor spelling errors when meaning is clear.
 - Be strict about required meaning-bearing facts.
-- Mark `Again` for missing material facts, contradictions, vague answers, category-level answers where specificity is required, non-answers, or answers that do not address the prompt.
-- If the answer is partially correct but not complete enough to pass, mark `Again`.
+- After the targeted completion opportunity, mark `Again` for missing material facts, contradictions, vague answers, category-level answers where specificity is required, non-answers, or answers that do not address the prompt.
+- If the combined original response and targeted follow-up are still not complete enough to pass, mark `Again`.
 - In stepwise mode, completeness means completeness for the active part only; never require later parts early.
 - Distinguish conceptual errors from harmless notation or presentation slips. If the intended meaning is clear and an omitted domain, variable declaration, or symbol is already supplied by the prompt, prefer a brief correction over `Again`.
 - Treat a missing or corrupted symbol caused by chat rendering as a tool failure, not a learner error. Retract any grade based on it and show a copyable version.
@@ -237,9 +250,10 @@ Use this skill's policy, adapted from but independent of the AI typed-answer gra
 Cards may contain images, audio, or other Anki media.
 
 - When `present_card` returns rendered media or media references that are visible in chat, include them as part of the question/back.
-- If front or back HTML contains `<img src="FILENAME">`, proactively retrieve and display each image.
-- Use `retrieveMediaFile(filename=FILENAME)` for image files such as `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, and `.svg`.
-- If `retrieveMediaFile` returns base64 data, save it to `/private/tmp/anki-mcp-media/FILENAME` and show it with Markdown: `![Anki media](/private/tmp/anki-mcp-media/FILENAME)`.
+- If front or back HTML contains `<img src="FILENAME">`, proactively display each image in the learner-facing card message.
+- Prefer a Markdown link to the original local Anki media file when it is available (for example, in the active profile's `collection.media` directory); do not copy it merely to render it.
+- Otherwise, use `retrieveMediaFile(filename=FILENAME)` for image files such as `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, and `.svg`. If it returns base64 data, save it to `/private/tmp/anki-mcp-media/FILENAME` and render that file with Markdown.
+- Do not rely on an internal image-display tool call alone: the final learner-facing card message itself must contain the Markdown image reference.
 - Show front-side images with the question before the user answers. Show back-side images with the revealed back before grading.
 - Strip large raw HTML/CSS from the user-visible card text; preserve meaningful field labels and text.
 - If image media still cannot be rendered or inspected, say `Media unavailable.` and do not grade visual recall as correct unless the text alone is sufficient.

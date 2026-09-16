@@ -57,6 +57,8 @@ The script returns an ordered agenda from:
 
 Execute the full agenda in one roughly 15–20 minute session. After each activity, continue to the next automatically. Use `chat-anki-review` for live scheduling and keep Anki ratings learner-controlled. After each activation task, normalize and record the approved non-sensitive evidence through `scripts/record_evidence.py`; this makes interrupted sessions resumable without chat memory. Ask only meaning-bearing questions, review answers, or consequential choices; do not ask the learner to select a phase, remember a date, count cohort days, inspect decks, or issue a second command for activation.
 
+When the agenda emits `voice-bridge-required`, generate one packet directly. The user-started daily session authorizes registration of that one due pending packet; deferring its use carries no penalty. When the agenda emits `voice-bridge-pending`, recover that packet or ingest its report before replacement. Do not repeat a same-day hidden retrieval or stack a newly exposed phase after delayed catch-up work.
+
 If a day is missed, resume the earliest incomplete gate from durable Anki state. Do not cram missed exercises, skip ahead because time elapsed, or credit evidence that was never produced. Accept spacing holds when evidence finishes before the next minimum-day unlock.
 
 An explicit new-word, capture-only, activation, repair, audit, or review request starts that named route directly.
@@ -100,6 +102,8 @@ Choose one initial track:
 - **Defer or reject**: the sense is too low-value, poorly grounded, redundant, or costly right now.
 
 Track choice is reversible. Recognition does not obligate activation.
+
+For recognition-only words with opaque spelling, uncertain stress, difficult sound sequences, print-only encounters, or explicit learner interest, proactively offer one pronunciation-only Voice check in the proposed budget. It is a separate opt-in, not full activation. Initialize it only after approval.
 
 ## 4. Guided sense acquisition
 
@@ -177,7 +181,9 @@ Give separate feedback on meaning, syntax, collocation, register, and discourse 
 
 Use `activation-evidence.md` to select and record the exact next task. Calendar dates unlock later phases but never complete earlier ones. An Anki Usage review may fulfill a matching activation task; record it once after rating and do not assign duplicate transient practice.
 
-For speech-oriented work, route an explicit driving, car, hands-free, or Voice request through `voice-bridge.md`. Generate the packet from current durable state, pause the main branch, and resume after validating and recording the returned bridge report. Never perform Anki scheduling inside the Voice offshoot.
+For speech-enabled activation with required Voice, the source-specific gates are a validated pronunciation pass, one Voice and one non-Voice hidden retrieval on different dates, and a validated Voice integration response. Allow explicit per-word or per-task overrides, but persist them and never invent the waived evidence.
+
+For speech-oriented work, route an explicit Voice request through `voice-bridge.md`. Generate the packet from current durable state, pause the main branch, and resume after validating and recording the returned bridge report. Never perform Anki scheduling inside the Voice offshoot.
 
 ## 8. Real-world evidence
 

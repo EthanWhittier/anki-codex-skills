@@ -4,7 +4,8 @@ This file records how the consolidated source snapshot was assembled. It complem
 
 ## Original local components
 
-- Codex skills were synchronized from the active personal skill directories on 2026-07-12.
+- The initial Codex skills were synchronized from the active personal skill directories on 2026-07-12.
+- On 2026-09-16, `study-section` was added and the local `chat-anki-review` and `learn-vocabulary` skills were refreshed from their active personal copies. Python caches were excluded; the packaged chat-review copy was refreshed in parallel and kept portable with an absolute-path placeholder.
 - The local review orchestration and coordinated AnkiConnect/Anki MCP modifications were synchronized from the working tree of `EthanWhittier/anki-ai-grader-addon` on 2026-07-12.
 - That source working tree contained intentional uncommitted review-stack changes. The consolidated snapshot preserves those source changes rather than only the last upstream commit.
 

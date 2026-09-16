@@ -57,6 +57,8 @@ Choose only the useful forms:
 
 When listening or pronunciation is a stated goal, use verified audio only when an authorized source or existing Anki media is available. Otherwise store dialect-labeled pronunciation guidance and state that auditory recognition has not yet been tested.
 
+For a recognition-only word with opaque spelling, uncertain stress, a difficult sound sequence, a print-only encounter, or explicit learner interest, proactively offer one pronunciation-only Voice check. Treat it as a separate opt-in burden, not activation. If approved, initialize its durable pronunciation-only state after the recognition note is verified.
+
 ### Learning controls
 
 - lifecycle stage;

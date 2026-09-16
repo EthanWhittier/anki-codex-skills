@@ -77,6 +77,8 @@ TASK_LABELS = {
     "integration-writing": "use the target in a short novel-context paragraph",
     "delayed-definition": "recover the required meaning components after a delay",
 }
+VOICE_POLICIES = {"required", "optional", "off"}
+VOICE_GATE_TASKS = {"pronunciation", "hidden-retrieval", "integration-speech"}
 
 
 class AnkiError(RuntimeError):
@@ -149,6 +151,33 @@ def normalize_goals(goals: Any) -> list[str]:
     return list(dict.fromkeys(normalized)) or ["writing"]
 
 
+def voice_policy(state: dict[str, Any]) -> str:
+    raw = str(state.get("voice_policy", "")).strip().casefold()
+    if raw in VOICE_POLICIES:
+        return raw
+    goals = normalize_goals(state.get("goals"))
+    if state.get("status") == "pronunciation-only":
+        return "required"
+    return "required" if state.get("voice_enabled") and "speech" in goals else "optional"
+
+
+def voice_waivers(state: dict[str, Any]) -> set[str]:
+    raw = state.get("voice_waivers", [])
+    if not isinstance(raw, list):
+        return set()
+    return {str(task) for task in raw if str(task) in VOICE_GATE_TASKS}
+
+
+def voice_required(state: dict[str, Any], task: str) -> bool:
+    if task not in VOICE_GATE_TASKS or voice_policy(state) != "required":
+        return False
+    if task in voice_waivers(state):
+        return False
+    if state.get("status") == "pronunciation-only":
+        return task == "pronunciation"
+    return "speech" in normalize_goals(state.get("goals"))
+
+
 def cohort_start_from_tags(tags: list[str]) -> date | None:
     prefix = "vocab::cohort::"
     values: list[date] = []
@@ -169,10 +198,11 @@ def initial_state(
     recording_authorized: bool = False,
     voice_enabled: bool = False,
 ) -> dict[str, Any]:
+    normalized_goals = normalize_goals(goals or ["writing"])
     return {
         "schema": STATE_SCHEMA,
         "sense_id": sense_id,
-        "goals": normalize_goals(goals or ["writing"]),
+        "goals": normalized_goals,
         "cohort_start": cohort_start.isoformat(),
         "status": "active",
         "current_phase": "anchor",
@@ -180,6 +210,8 @@ def initial_state(
         "completed_phases": [],
         "recording_authorized": bool(recording_authorized),
         "voice_enabled": bool(voice_enabled),
+        "voice_policy": "required" if voice_enabled and "speech" in normalized_goals else "optional",
+        "voice_waivers": [],
         "pending_voice_sessions": [],
         "last_evidence_at": None,
         "last_session": None,
@@ -203,6 +235,14 @@ def parse_state(note: dict[str, Any], fallback_start: date | None = None) -> dic
     pending = state.get("pending_voice_sessions", [])
     if not isinstance(pending, list):
         raise SchemaError("Activation State pending_voice_sessions must be a list")
+    policy = str(state.get("voice_policy", "")).strip().casefold()
+    if policy and policy not in VOICE_POLICIES:
+        raise SchemaError("Activation State voice_policy is invalid")
+    waivers = state.get("voice_waivers", [])
+    if not isinstance(waivers, list) or any(str(task) not in VOICE_GATE_TASKS for task in waivers):
+        raise SchemaError("Activation State voice_waivers is invalid")
+    state["voice_policy"] = voice_policy(state)
+    state["voice_waivers"] = sorted(voice_waivers(state))
     return state
 
 
@@ -259,6 +299,23 @@ def count_events(events: list[dict[str, Any]], task: str) -> int:
     return sum(max(1, int(event.get("count", 1))) for event in passed(events, task))
 
 
+def voice_passed(events: list[dict[str, Any]], task: str) -> list[dict[str, Any]]:
+    result = [
+        event
+        for event in passed(events, task)
+        if event.get("source") == "chatgpt-voice-bridge"
+        and event.get("evidence_quality") == "voice-report"
+        and event.get("audio_heard") is True
+    ]
+    if task == "pronunciation":
+        result = [event for event in result if event.get("pronunciation") == "pass"]
+    return result
+
+
+def direct_passed(events: list[dict[str, Any]], task: str) -> list[dict[str, Any]]:
+    return [event for event in passed(events, task) if event.get("evidence_quality") != "voice-report"]
+
+
 def modalities(events: list[dict[str, Any]], task: str) -> set[str]:
     return {str(event.get("modality")) for event in passed(events, task)}
 
@@ -272,15 +329,24 @@ def contexts(events: list[dict[str, Any]], task: str) -> set[str]:
     return result
 
 
-def phase_audit(events: list[dict[str, Any]], goals: list[str]) -> dict[str, dict[str, Any]]:
+def phase_audit(
+    events: list[dict[str, Any]], goals: list[str], state: dict[str, Any] | None = None
+) -> dict[str, dict[str, Any]]:
     goals = normalize_goals(goals)
+    state = state or {"goals": goals, "voice_enabled": False, "voice_policy": "optional"}
     audits: dict[str, dict[str, Any]] = {}
 
     anchor_missing: list[str] = []
     if count_events(events, "meaning-boundary") < 1:
         anchor_missing.append("meaning-boundary")
-    if "speech" in goals and count_events(events, "pronunciation") < 1:
+    if (
+        "speech" in goals
+        and "pronunciation" not in voice_waivers(state)
+        and count_events(events, "pronunciation") < 1
+    ):
         anchor_missing.append("pronunciation")
+    if "speech" in goals and voice_required(state, "pronunciation") and not voice_passed(events, "pronunciation"):
+        anchor_missing.append("voice-pronunciation")
     if count_events(events, "visible-use") < 2:
         anchor_missing.append("visible-use")
     audits["anchor"] = {"complete": not anchor_missing, "missing": anchor_missing}
@@ -297,35 +363,36 @@ def phase_audit(events: list[dict[str, Any]], goals: list[str]) -> dict[str, dic
         controlled_missing.append("controlled-use-count")
     if len(contexts(events, "controlled-use")) < 3:
         controlled_missing.append("controlled-use-contexts")
-    controlled_modalities = modalities(events, "controlled-use")
-    if "speech" in goals and not controlled_modalities.intersection({"speech", "mixed"}):
-        controlled_missing.append("controlled-use-speech")
-    if "writing" in goals and not controlled_modalities.intersection({"writing", "mixed"}):
-        controlled_missing.append("controlled-use-writing")
+    # Production may be demonstrated through either live speech or typed text.
+    # The goals identify preferred real-world channels; they do not duplicate
+    # the same language-use gate when both are selected.
     audits["controlled-production"] = {"complete": not controlled_missing, "missing": controlled_missing}
 
     hidden = passed(events, "hidden-retrieval")
     hidden_dates = {event_date(event) for event in hidden if event_date(event) is not None}
-    hidden_modalities = {str(event.get("modality")) for event in hidden}
     lexical_missing: list[str] = []
     if len(hidden) < 2:
         lexical_missing.append("hidden-retrieval-count")
     if len(hidden_dates) < 2:
         lexical_missing.append("hidden-retrieval-delayed-days")
-    if "speech" in goals and not hidden_modalities.intersection({"speech", "mixed"}):
-        lexical_missing.append("hidden-retrieval-speech")
-    if "writing" in goals and not hidden_modalities.intersection({"writing", "mixed"}):
-        lexical_missing.append("hidden-retrieval-writing")
+    if voice_required(state, "hidden-retrieval"):
+        if not direct_passed(events, "hidden-retrieval"):
+            lexical_missing.append("direct-hidden-retrieval")
+        if not voice_passed(events, "hidden-retrieval"):
+            lexical_missing.append("voice-hidden-retrieval")
     audits["lexical-access"] = {"complete": not lexical_missing, "missing": lexical_missing}
 
     integration_missing: list[str] = []
-    if "speech" in goals and count_events(events, "integration-speech") < 1:
-        integration_missing.append("integration-speech")
-    if "writing" in goals and count_events(events, "integration-writing") < 1:
-        integration_missing.append("integration-writing")
+    if voice_required(state, "integration-speech"):
+        integration_events = voice_passed(events, "integration-speech")
+        if not integration_events:
+            integration_missing.append("voice-integration-speech")
+    else:
+        integration_events = passed(events, "integration-speech") + passed(events, "integration-writing")
+    if not integration_events:
+        integration_missing.append("integration-response")
     if count_events(events, "delayed-definition") < 1:
         integration_missing.append("delayed-definition")
-    integration_events = passed(events, "integration-speech") + passed(events, "integration-writing")
     if not any(bool(event.get("novel_context")) for event in integration_events):
         integration_missing.append("integration-novel-context")
     audits["integration"] = {"complete": not integration_missing, "missing": integration_missing}
@@ -340,7 +407,33 @@ def derive_progress(state: dict[str, Any], ledger: dict[str, Any], today: date) 
         raise SchemaError("Activation State has an invalid cohort_start") from error
     calendar_day = max(1, (today - started).days + 1)
     events = [event for event in ledger.get("events", []) if isinstance(event, dict)]
-    audits = phase_audit(events, goals)
+    policy = voice_policy(state)
+    if state.get("status") == "pronunciation-only":
+        complete = not voice_required(state, "pronunciation") or bool(voice_passed(events, "pronunciation"))
+        missing = [] if complete else ["voice-pronunciation"]
+        today_events = [event for event in events if event_date(event) == today]
+        voice_events = [event for event in events if event.get("evidence_quality") == "voice-report"]
+        return {
+            "profile": "pronunciation-only",
+            "calendar_day": calendar_day,
+            "current_phase": "pronunciation-complete" if complete else "anchor",
+            "next_phase": "pronunciation-complete",
+            "unlocks_on": None,
+            "completed_phases": ["pronunciation"] if complete else [],
+            "phase_audit": {"pronunciation": {"complete": complete, "missing": missing}},
+            "missing": missing,
+            "tasks": [] if complete else ["pronunciation"],
+            "task_labels": [] if complete else [TASK_LABELS["pronunciation"]],
+            "voice_tasks": [] if complete else ["pronunciation"],
+            "voice_due": not complete,
+            "voice_policy": policy,
+            "evidence_count": len(events),
+            "today_evidence_count": len(today_events),
+            "voice_evidence_count": len(voice_events),
+            "ready_for_decision": False,
+        }
+
+    audits = phase_audit(events, goals, state)
     earliest_incomplete = next((phase for phase in PHASES if not audits[phase]["complete"]), None)
     completed = PHASES[: PHASES.index(earliest_incomplete)] if earliest_incomplete else list(PHASES)
 
@@ -363,20 +456,56 @@ def derive_progress(state: dict[str, Any], ledger: dict[str, Any], today: date) 
         unlocks_on = None
 
     today_events = [event for event in events if event_date(event) == today]
+    if earliest_incomplete is None and current_phase == "decision-ready" and any(
+        TASK_PHASE.get(str(event.get("task"))) == "integration" and event.get("result") == "pass"
+        for event in today_events
+    ):
+        current_phase = "spacing-hold"
+        unlocks_on = (today + timedelta(days=1)).isoformat()
+    if earliest_incomplete and current_phase == earliest_incomplete:
+        earliest_index = PHASES.index(earliest_incomplete)
+        advanced_today = any(
+            TASK_PHASE.get(str(event.get("task"))) in PHASES
+            and PHASES.index(TASK_PHASE[str(event.get("task"))]) < earliest_index
+            for event in today_events
+            if event.get("result") == "pass"
+        )
+        hidden_today = earliest_incomplete == "lexical-access" and any(
+            event.get("task") == "hidden-retrieval" and event.get("result") == "pass"
+            for event in today_events
+        )
+        hidden_dates = {
+            event_date(event)
+            for event in passed(events, "hidden-retrieval")
+            if event_date(event) is not None
+        }
+        if advanced_today or (hidden_today and len(hidden_dates) < 2):
+            current_phase = "spacing-hold"
+            unlocks_on = (today + timedelta(days=1)).isoformat()
     voice_events = [event for event in events if event.get("evidence_quality") == "voice-report"]
     requirement_to_task = {
         "controlled-use-count": "controlled-use",
         "controlled-use-contexts": "controlled-use",
-        "controlled-use-speech": "controlled-use",
-        "controlled-use-writing": "controlled-use",
         "hidden-retrieval-count": "hidden-retrieval",
         "hidden-retrieval-delayed-days": "hidden-retrieval",
-        "hidden-retrieval-speech": "hidden-retrieval",
-        "hidden-retrieval-writing": "hidden-retrieval",
+        "direct-hidden-retrieval": "hidden-retrieval",
+        "voice-hidden-retrieval": "hidden-retrieval",
+        "voice-pronunciation": "pronunciation",
+        "voice-integration-speech": "integration-speech",
+        "integration-response": "integration-speech" if "speech" in goals else "integration-writing",
         "integration-novel-context": "integration-speech" if "speech" in goals else "integration-writing",
     }
     tasks = list(dict.fromkeys(requirement_to_task.get(requirement, requirement) for requirement in missing))
+    voice_tasks: list[str] = []
+    if current_phase != "spacing-hold":
+        if "voice-pronunciation" in missing:
+            voice_tasks.append("pronunciation")
+        if "voice-hidden-retrieval" in missing and "direct-hidden-retrieval" not in missing:
+            voice_tasks.append("hidden-retrieval")
+        if "voice-integration-speech" in missing:
+            voice_tasks.append("integration-speech")
     return {
+        "profile": "activation",
         "calendar_day": calendar_day,
         "current_phase": current_phase,
         "next_phase": earliest_incomplete or "decision-ready",
@@ -386,6 +515,9 @@ def derive_progress(state: dict[str, Any], ledger: dict[str, Any], today: date) 
         "missing": missing,
         "tasks": tasks,
         "task_labels": [TASK_LABELS.get(task, task) for task in tasks],
+        "voice_tasks": voice_tasks,
+        "voice_due": bool(voice_tasks),
+        "voice_policy": policy,
         "evidence_count": len(events),
         "today_evidence_count": len(today_events),
         "voice_evidence_count": len(voice_events),

@@ -56,20 +56,26 @@ Calendar time only unlocks a phase. Advance only after all earlier gates pass.
 
 | Phase | Earliest cohort day | Evidence required |
 |---|---:|---|
-| Anchor | 1 | one meaning-and-boundary pass; pronunciation pass when speech is a goal; two natural visible-target uses |
+| Anchor | 1 | one meaning-and-boundary pass; when speech and required Voice are enabled, one validated Voice pronunciation pass; two natural visible-target uses |
 | Distinguish | 3 | one near-neighbor distinction; one grammar/collocation pass; one misuse diagnosis |
-| Controlled production | 6 | three natural uses across three coarse contexts; include speech and/or writing according to goals |
-| Lexical access | 10 | two target-hidden retrieval passes on different dates; include each requested modality |
-| Integration | 13 | a 30–60 second spoken response when speech is a goal; a short paragraph when writing is a goal; at least one novel context; one delayed definition-components pass |
+| Controlled production | 6 | three natural uses across three coarse contexts, supplied either by speech or writing |
+| Lexical access | 10 | two target-hidden retrieval passes on different dates; under required Voice policy, one validated Voice pass and one non-Voice pass |
+| Integration | 13 | under required Voice policy for a speech goal, one validated target-hidden 30–60 second Voice response; otherwise one spoken response or short paragraph; at least one novel context; one delayed definition-components pass |
 | Decision | 15 | all gates above plus an evidence-quality review |
 
 For a hidden-retrieval pass, require `target_visibility=hidden`, `target_retrieved_before_reveal=true`, and `target_revealed_early=false`. A correct synonym is valid language but not target retrieval.
 
 Voice evidence may satisfy production gates when its report is coherent, structurally validated, semantically reviewed, tied to an active pending session, and Voice actually heard the response. Label it `voice-report`; never present it as a verbatim transcript. Do not promote automatically from Voice reports alone when important ambiguity remains.
 
+Required Voice is the default for activation notes with `speech` goals and `voice_enabled=true`, including legacy notes without an explicit policy. `voice_policy=optional` keeps Voice available without source-specific gates; `voice_policy=off` disables it. `voice_waivers` may exempt one canonical Voice gate after explicit learner approval. A waiver removes the modality requirement; it never creates evidence.
+
+A recognition note may use `status=pronunciation-only` with required Voice. It remains in Recognition, requires only a validated pronunciation event, and must not inherit the rest of the activation phase gates.
+
 ## 4. Spacing and resumption
 
 If a gate is completed before the next phase's earliest day, enter `spacing-hold`; do not manufacture extra permanent reviews. Normal Anki reviews continue.
+
+After one hidden-retrieval pass on the current date, hold the second pass until a different date. When delayed work completes an earlier phase, do not stack the newly exposed phase into the same daily session.
 
 If the learner misses days, keep the earliest unfinished phase. Never skip a gate, stack catch-up exercises, or infer practice. If a session is interrupted, Anki review tickets recover scheduled cards and the evidence ledger prevents completed activation tasks from being repeated. An unrecorded partial answer may be safely repeated.
 

@@ -42,12 +42,12 @@ def main() -> int:
         fields = client.call("modelFieldNames", modelName=MODEL) or []
         if fields != EXPECTED_FIELDS:
             raise AnkiError("Vocabulary Sense fields differ from the activation-ledger schema")
-        note_ids = client.call("findNotes", query='deck:"Vocabulary" tag:vocab::stage::activation') or []
+        note_ids = client.call("findNotes", query='deck:"Vocabulary"') or []
         notes = client.call("notesInfo", notes=note_ids) if note_ids else []
         changed: list[int] = []
         removed: list[str] = []
         for note in notes:
-            if note.get("modelName") != MODEL:
+            if note.get("modelName") != MODEL or not note.get("fields", {}).get("Activation State", {}).get("value"):
                 continue
             state = parse_state(note)
             pending = [entry for entry in state.get("pending_voice_sessions", []) if isinstance(entry, dict)]

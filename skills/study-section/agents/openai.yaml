@@ -1,0 +1,4 @@
+interface:
+  display_name: "Study a Chapter or Section"
+  short_description: "Read, reason, practice, and track learning milestones"
+  default_prompt: "Use $study-section to resume my current section and guide the next learning milestone."
