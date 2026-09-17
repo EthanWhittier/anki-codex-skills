@@ -7,10 +7,10 @@ Use one readable Markdown ledger per source unit plus the shared index. This is 
 - Source title/edition/path or URL; exact section; printed/PDF page distinction when applicable.
 - Parent chapter/track milestone, agreed depth/scope (master, read for context, reference/skip), optional/deferred topics, and session budget. Track only meaningful scope choices, not a row for every incidental fact.
 - Reported reading position, active learning activity, and exact next action.
-- Outcomes table: ID, capability, source/task, status, evidence.
+- Reuse one topic/outcome map for the unit, following the shared `add-anki-cards/references/learning-map.md` guidance. Include stable topic/outcome ID, source, intended capability/depth, coverage support, learning evidence, and next action. Existing high-level milestones may group several targets; do not create a competing Anki tracker.
 - Brief dated evidence entries: actual task, a concise description of the learner's response, correctness/gap, and help used. Avoid storing full transcripts or answer keys in the learner-facing tracker.
 - Later-check queue: agreed checks only, with outcome, concrete fresh task or task specification without its answer, earliest useful opportunity such as “next geology session after a gap,” and pending/completed/deferred result. Include checks covered by the accepted study plan; recommendations alone create no obligation. Consult the queue on resumption. Record whether notes, source, hints, or other assistance were used. Do not mark a same-session retry as a delayed check. Do not infer elapsed days without available date evidence.
-- Anki candidates, chosen scope/budget if known, and verified created note IDs. Keep candidates, pending writes, and verified notes distinct. Record standing authorization only when explicitly given, with its limits.
+- Coverage support: Anki candidates, verified existing/created note IDs, chosen non-card practice, established knowledge needing no new card, and deliberate omissions. Keep candidates, pending writes, and verified notes distinct. Track total chosen scope/budget separately from the next authoring batch. A checked coverage box records support or an explicit scope decision, not mastery. Record standing authorization only when explicitly given, with its limits.
 - Optional reference notes or connections only when useful or requested.
 
 ## Outcome states
@@ -23,7 +23,7 @@ Use one readable Markdown ledger per source unit plus the shared index. This is 
 | Demonstrated later | An adequate fresh attempt was observed after a meaningful gap; this does not guarantee permanent mastery. |
 | Deferred | The learner chose to set the outcome aside; preserve the reason if known. |
 
-Record help separately: independent, hint, reference available, worked example/solution, or learner-reported evidence. When an answer used relevant help, do not label that attempt independent. An uncued fresh variation after teaching can support “demonstrated now,” with the recent instruction still noted. Immediate reproduction supports practice only.
+Record help and task novelty separately: independent, hint, reference available, worked example/solution, or learner-reported evidence; familiar versus a new application. Delayed performance and transfer are different evidence, and neither is implied by card existence. When an answer used relevant help, do not label that attempt independent. An uncued fresh variation after teaching can support “demonstrated now,” with the recent instruction still noted. Immediate reproduction supports practice only.
 
 ## Unit status
 

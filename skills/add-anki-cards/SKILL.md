@@ -11,6 +11,8 @@ Use Anki MCP or AnkiConnect for all Anki reads and writes. Do not write directly
 
 Read `references/supermemo-checklist.md` before judging whether proposed cards are well formulated.
 
+For chapter/topic coverage, substantial deck building, or a staged learning sequence, read [learning-map.md](references/learning-map.md). Reuse its four-level map from terminology and foundations through concepts, depth, and synthesis/transfer. Keep coverage support separate from learning evidence; a single-card request does not require a new map.
+
 For AI-graded note types or conceptual card/deck design, also read `references/grader-aware-design.md` before proposing, refining, or adding cards.
 
 For generative exercise blueprints, read `references/generative-blueprints.md` completely before designing or adding one.
@@ -27,12 +29,12 @@ If the current task also requires inspecting deck structure, note fields, or exi
 2. Establish the learning target before finalizing a card.
    - Identify what understanding, capability, fluency, connection, or transfer the card should develop. A predicted mistake is optional, not mandatory.
    - Treat the learner as the authority on topic priority and acceptable deck load. Never infer that a topic is high value merely because it is complicated, confusable, or generative-card-friendly.
-   - Before allocating a rich sequence or extended worksheet, state the proposed card budget and obtain the learner's approval of both the topic priority and batch size. If either is unclear, default to the smallest viable addition and present expansions as optional.
-   - Do not turn an unresolved explanation into a memorization card. Help the user understand or refine the concept first.
+   - Before allocating a rich sequence or extended worksheet, state the proposed card budget and obtain the learner's approval of both the topic priority and batch size. For comprehensive coverage, assess the map before estimating the total; distinguish that estimate from the next authoring batch. If scope is unclear, start with a focused candidate or clarify the consequential choice without treating that first batch as complete coverage.
+   - Do not turn an unresolved explanation into a memorization card. Help the user understand or refine the concept first. A foundational term or rule may be retained once its basic meaning and relevant conditions are understood; advanced explanation and transfer need not be complete first.
    - If the user asks to review wording or understanding before creation, do not write to Anki until the exact card is approved, even when an earlier standing instruction allowed adding cards as they go.
-   - Before proposing advanced cards or blueprints, consult an existing staged higher-order learning map. If none exists and advanced sequencing matters, create one organized around mechanisms, diagnosis/comparison, worked synthesis, and transfer.
-   - Set a coverage budget from the learner-assigned priority, then use complexity, confusability, downstream leverage, and demonstrated errors only to decide how best to spend that budget. Do not mechanically create every card role for every topic.
-   - For a simple or low-priority topic, usually prefer one strong anchor plus at most one useful contrast or application. Reserve richer definition/example/mechanism/error/transfer sequences for high-priority, complicated, or repeatedly confused concepts.
+   - For multi-topic coverage, reuse or create the source-grounded learning map before selecting batches, including important foundational targets and the intended depth for each topic. Consult it again before advanced cards or blueprints; preserve existing topic IDs, coverage, and evidence rather than starting a separate advanced tracker.
+   - Use learner priorities, important coverage gaps, and distinct retrieval purposes to propose scope, then negotiate a sustainable workload. Complexity and errors inform allocation within that scope, not automatic expansion. Do not mechanically create every card role for every topic.
+   - For a simple or low-priority topic, one strong anchor plus a useful contrast or application may suffice; this is not a cap for a multi-concept section. Build broader foundational coverage and deeper practice where the selected goals warrant them. Keep useful terminology and rule cards as advanced cards are added.
 
 3. Parse each proposed card.
    - Preserve the user's wording unless correctness, grammar, or Anki rendering requires a small change.
@@ -75,18 +77,18 @@ If the current task also requires inspecting deck structure, note fields, or exi
    - Read the returned note IDs with `notesInfo` or equivalent.
    - Report created note IDs and any skipped duplicates or failures.
 
-9. Maintain topic coverage when requested.
-   - Use a small markdown tracker under the current workspace, commonly `work/<deck>-<topic>-tracker.md`.
-   - Record existing direct cards, added note IDs, covered topics, gaps, and pending correctness checks.
-   - Update coverage only after the Anki note has been verified.
-   - Track the approved card budget as well as conceptual gaps, so broader coverage does not silently become uncontrolled deck growth.
+9. Maintain the learning map during mapped study or when coverage tracking is requested.
+   - Reuse the existing tracker or study ledger and its path. For a new standalone project, use a compact Markdown tracker in the current workspace.
+   - Record important topics, intended depth, existing support, verified added note IDs, gaps, deliberate exclusions, and the next action using `references/learning-map.md`.
+   - Mark card support only after verification. Preserve separate evidence of independent performance now, after a delay, and on novel tasks; checked coverage does not mean mastery.
+   - Track the approved total scope/budget separately from the current batch so neither silent deck growth nor silent undercoverage occurs.
 
 ## Understanding-First Hybrid Authorship
 
 For higher-order permanent cards:
 
 1. Propose the learning purpose, card role, and a candidate front derived from that purpose.
-2. Invite the learner to draft the meaning-bearing back and revise the front if desired.
+2. Invite the learner to draft the meaning-bearing back and revise the front if desired, or reuse an adequate explanation they already gave. Normally wait for their attempt before showing a completed back; do not require ceremonial repetition.
 3. Check reasoning before polishing wording.
 4. If needed, increase support gradually: one conceptual hint, then an incomplete structure, then candidate wording only when requested or necessary.
 5. Preserve the learner's wording unless correctness, grammar, or rendering requires a change.

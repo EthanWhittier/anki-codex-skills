@@ -11,7 +11,18 @@ This file holds durable goals, background, and learning preferences. Current sub
 - AI may propose milestones, locate exercises, explain, check reasoning, and handle administration. Independent learner explanations, choices of approach, and applications matter more than doing all planning unaided.
 - Preserve actual reading. Copied chapter notes are not required. Useful foundational notes, personal connections, and diagrams may be retained. Discuss directly and create selected cards through the existing skill.
 - Recommend retrieval, application, and later independent checks where useful; keep them adjustable rather than enforced. Anki supports selected lasting knowledge, not exhaustive coverage. Scale effort to importance and learner interest, with no homework created merely by suggesting an activity.
+- The learner values terminology and foundational knowledge alongside explanations, applications, and synthesis, and is open to many useful cards. Propose adequate coverage for the chosen goals rather than an arbitrary tiny section budget; negotiate sustainable review workload and distinguish small authoring batches from total coverage.
+- Prefer the Logic-style approach for mastery-oriented study across topics and textbooks: map important topics at the start, then develop terminology/foundations, basic concepts/use, depth checks, and synthesis/transfer while checking off actual coverage. The levels are flexible and do not require four cards per topic. Preserve reading and learner authorship; AI maintains the map and administration.
 - Invite connections across subjects when they arise naturally or help understanding; do not manufacture cross-disciplinary exercises for every section.
+
+## Historical design references
+
+The Logic workflow is a reusable design example, not a fixed curriculum or evidence of current mastery:
+
+- Foundational checklist and higher-order map: `/Users/ethanwhittier/Documents/Codex/2026-06-21/usi/work/logic-predicate-topic-tracker.md`.
+- Hybrid authorship and practice architecture: `/Users/ethanwhittier/Documents/Codex/2026-07-05/do/outputs/predicate-logic-hybrid-generative-practice-plan.md`.
+
+Consult these only when reconstructing the design; current subject state still comes from its ledger and live data when available.
 
 ## Locate current progress
 

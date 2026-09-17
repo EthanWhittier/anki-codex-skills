@@ -16,8 +16,8 @@ Use this reference when a note type supports AI grading or when designing concep
 
 1. Identify the learning target.
    - Ask: What should the learner understand or be able to do later?
-   - Ask: What future mistake is this card preventing?
-   - Ask the learner how important the topic is and how many cards it warrants before treating complexity as a reason for a richer sequence.
+   - Consider a predicted mistake only when it clarifies the target; fluency, mental models, and useful connections are sufficient purposes.
+   - Reuse the learning map and agreed priorities when present. Propose coverage and workload before expanding scope; do not repeatedly ask the learner to classify already-agreed topics.
    - Do not create the card while the underlying concept is still unresolved.
 
 2. Choose the card role.
@@ -50,8 +50,7 @@ Use this reference when a note type supports AI grading or when designing concep
    - Do not make the grader demand more than the front and back establish.
 
 6. Check deck cohesion.
-   - Pair definitions with examples or recognition cards.
-   - Pair rules with mechanisms, allowed applications, and failure cases.
+   - Consider examples or recognition to support definitions, and mechanisms or applications to support rules, using the map to identify actual gaps. Keep useful foundational cards; do not require every role for every concept.
    - Add contrast cards for confusable concepts.
    - Add transfer cards only after the foundational concept is understood.
    - Track coverage and the learner-approved card budget without treating every nearby topic as an immediate gap or completing the full card-type palette.
