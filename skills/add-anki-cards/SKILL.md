@@ -47,6 +47,7 @@ If the current task also requires inspecting deck structure, note fields, or exi
    - If the issue is merely wording preference, do not block addition.
 
 5. Check formulation and card role.
+   - Before presenting candidate fronts or exercise instances, read [question-design.md](references/question-design.md) and apply its brief check for unintended answer clues, valid ordering/matching layouts, fair givens, and acceptable alternatives. Audit the surrounding message as well as the front; keep the answer and the target reasoning out of introductory commentary.
    - Choose deliberately among atomic retrieval, a focused exercise, and an extended worksheet.
    - Prefer one clear fact, distinction, rule, or example for ordinary fixed retrieval, and prefer short answers there.
    - Do not treat atomicity as a blanket prohibition on synthesis. An extended worksheet may require substantial effort when its ordered parts form one coherent learning arc and the concept is important enough to justify the review time.

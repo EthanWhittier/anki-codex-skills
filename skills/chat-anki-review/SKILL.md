@@ -85,7 +85,7 @@ Do not run a long-lived manual stdio server for the actual chat session; Codex o
 
 ## Generative Exercise Mode
 
-Treat the generative card's `front` as an exercise blueprint and its `back` as a generation and grading contract. Never display either field verbatim as the learner's problem.
+Treat the generative card's `front` as an exercise blueprint and its `back` as a generation and grading contract. Never display either field verbatim as the learner's problem. Read the shared [question-design guidance](../add-anki-cards/references/question-design.md) before generating the first problem; apply its check to each candidate before freezing it, including clues in headings, list order, matching positions, and recent explanations. Preserve the blueprint's intended support level, difficulty, and legitimate givens.
 
 Before showing anything to the learner:
 
